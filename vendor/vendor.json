@@ -1,0 +1,25 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "DbMrtvSsjy/ATEfTkJZAuU3lHXY=",
+			"path": "github.com/gin-gonic/gin",
+			"revision": "09a3650c97ca7ef3a542d428a9fb2c8da8c18002",
+			"revisionTime": "2019-06-18T11:49:10Z"
+		},
+		{
+			"checksumSHA1": "rST0S8cuVbM57VmJhWXhKNUkKTc=",
+			"path": "github.com/gin-gonic/gin/internal/json",
+			"revision": "09a3650c97ca7ef3a542d428a9fb2c8da8c18002",
+			"revisionTime": "2019-06-18T11:49:10Z"
+		},
+		{
+			"checksumSHA1": "Yx1MU40fyGe7hhqW9+dkv8kXa60=",
+			"path": "gopkg.in/urfave/cli.v1",
+			"revision": "cfb38830724cc34fedffe9a2a29fb54fa9169cd1",
+			"revisionTime": "2017-08-11T01:42:03Z"
+		}
+	],
+	"rootPath": "staff-mall-center"
+}
