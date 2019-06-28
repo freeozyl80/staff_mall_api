@@ -3,9 +3,9 @@ package router
 import (
 	"fmt"
 	"staff-mall-center/pkg/setting"
-	"staff-mall-center/src/middleware/admin"
-	"staff-mall-center/src/middleware/benchmark"
-	r "staff-mall-center/src/router/admin"
+	"staff-mall-center/src/router/benchmark"
+	"staff-mall-center/src/router/manage"
+	"staff-mall-center/src/router/wx"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,13 +32,13 @@ func Start() {
 		c.JSON(200, resp)
 
 	})
+	// 	暂定router 分为三种类型 分别是 common || wx相关 || mis相关，具体后面再细分吧
 
-	authorized := router.Group("/")
+	wxRouter := router.Group("/wx")
+	manage.MangeRouterInit(wxRouter)
 
-	authorized.Use(admin.AuthRequired)
-	{
-		authorized.POST("/login", r.AdminLogin)
-	}
+	manageRouter := router.Group("/manage")
+	wx.WxRouterInit(manageRouter)
 
 	port := fmt.Sprintf(":%d", setting.Port)
 	router.Run(port)
