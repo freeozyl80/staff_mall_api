@@ -2,22 +2,22 @@ package router
 
 import (
 	"fmt"
+	"log"
 	"staff-mall-center/pkg/setting"
 	"staff-mall-center/src/router/benchmark"
 	"staff-mall-center/src/router/manage"
 	"staff-mall-center/src/router/wx"
+	"syscall"
 
+	"github.com/fvbock/endless"
 	"github.com/gin-gonic/gin"
 )
 
 func Start() {
 	router := gin.Default()
 	// 	mode模式
-	if setting.DevMode {
-		gin.SetMode(gin.DebugMode)
-	} else {
-		gin.SetMode(gin.ReleaseMode)
-	}
+	gin.SetMode(gin.DebugMode)
+
 	// prd模式开启log日志
 	router.Use(gin.Logger())
 
@@ -35,11 +35,28 @@ func Start() {
 	// 	暂定router 分为三种类型 分别是 common || wx相关 || mis相关，具体后面再细分吧
 
 	wxRouter := router.Group("/wx")
-	manage.MangeRouterInit(wxRouter)
+	wx.WxRouterInit(wxRouter)
 
 	manageRouter := router.Group("/manage")
-	wx.WxRouterInit(manageRouter)
+	manage.MangeRouterInit(manageRouter)
 
-	port := fmt.Sprintf(":%d", setting.Port)
-	router.Run(port)
+	port := fmt.Sprintf(":%d", setting.ServerSetting.HttpPort)
+	//router.Run(port)
+
+	// Test
+
+	server := endless.NewServer(port, router)
+
+	server.BeforeBegin = func(add string) {
+		log.Printf("pid is %d", syscall.Getpid())
+	}
+
+	endless.DefaultReadTimeOut = setting.ServerSetting.ReadTimeout
+	endless.DefaultWriteTimeOut = setting.ServerSetting.WriteTimeout
+	endless.DefaultMaxHeaderBytes = 1 << 20
+
+	err := server.ListenAndServe()
+	if err != nil {
+		log.Printf("Server err: %v", err)
+	}
 }
