@@ -2,13 +2,14 @@ package manage
 
 import (
 	"staff-mall-center/src/middleware/authcheck"
-	"staff-mall-center/src/router/manage/admin"
+	"staff-mall-center/src/router/manage/user"
 
 	"github.com/gin-gonic/gin"
 )
 
 func MangeRouterInit(mgrouter *gin.RouterGroup) {
 	mgrouter.Use(authcheck.AuthRequired)
-	mgrouter.POST("/admin/login", admin.AdminLogin)
-	mgrouter.POST("/admin/check", admin.AdminCheck)
+	mgrouter.POST("/user/register", user.UserRegister)
+	mgrouter.POST("/admin/login", user.AdminLogin)
+	mgrouter.POST("/admin/check", user.AdminCheck)
 }

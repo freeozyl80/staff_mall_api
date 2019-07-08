@@ -1,4 +1,4 @@
-package models
+package dao
 
 type Auth struct {
 	ID       int    `gorm:"primary_key" json:"id"`

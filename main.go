@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"staff-mall-center/models"
+	"staff-mall-center/models/dao"
 	"staff-mall-center/pkg/setting"
 	"staff-mall-center/src/router"
 
@@ -13,7 +13,7 @@ import (
 
 func init() {
 	setting.Setup()
-	models.Setup()
+	dao.Setup()
 }
 
 func main() {
