@@ -29,9 +29,20 @@ type Database struct {
 	TablePrefix string
 }
 
+type Xlsx struct {
+	UserXlsx string
+}
+
+type Crypto struct {
+	Seed1 string
+	Seed2 string
+}
+
 var ServerSetting = &Server{}
 var AppSetting = &App{}
 var DatabaseSetting = &Database{}
+var XlsxSetting = &Xlsx{}
+var CryptoSetting = &Crypto{}
 
 var cfg *ini.File
 
@@ -45,6 +56,8 @@ func Setup() {
 	mapTo("server", ServerSetting)
 	mapTo("app", AppSetting)
 	mapTo("database", DatabaseSetting)
+	mapTo("xlsx", XlsxSetting)
+	mapTo("crypto", CryptoSetting)
 
 	ServerSetting.ReadTimeout = ServerSetting.ReadTimeout * time.Second
 	ServerSetting.WriteTimeout = ServerSetting.ReadTimeout * time.Second

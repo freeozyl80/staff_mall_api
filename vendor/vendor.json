@@ -3,10 +3,6 @@
 	"ignore": "test",
 	"package": [
 		{
-			"path": "github.com/360EntSecGroup-Skylar/excelize/v2",
-			"revision": ""
-		},
-		{
 			"checksumSHA1": "q9bsaNA05ney3eon3nKAE+eLwO4=",
 			"path": "github.com/fvbock/endless",
 			"revision": "447134032cb6a86814f570257390a379982dfc61",
@@ -29,6 +25,12 @@
 			"path": "github.com/go-ini/ini",
 			"revision": "3be5ad479f69d4e08d7fe25edf79bf3346bd658e",
 			"revisionTime": "2019-03-27T02:48:45Z"
+		},
+		{
+			"checksumSHA1": "2jsbDTvwxafPp7FJjJ8IIFlTLjs=",
+			"path": "github.com/mohae/deepcopy",
+			"revision": "c48cc78d482608239f6c4c92a4abd87eb8761c90",
+			"revisionTime": "2017-09-29T03:49:55Z"
 		},
 		{
 			"checksumSHA1": "Yx1MU40fyGe7hhqW9+dkv8kXa60=",
