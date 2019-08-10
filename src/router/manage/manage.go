@@ -15,8 +15,10 @@ func MangeRouterInit(mgrouter *gin.RouterGroup) {
 
 	mgrouter.Use(context.Handle(authcheck.AuthRequired))
 
-	mgrouter.POST("/user/register", context.Handle(user.UserRegister))
+	// access
+	mgrouter.GET("/admin/auth", context.Handle(user.AdminCheck))
 
-	// management 功能
-	mgrouter.POST("/user/upload", context.Handle(user.UserImport))
+	mgrouter.GET("/user/list", context.Handle(user.UserList))
+	mgrouter.POST("/user/register", context.Handle(user.UserRegister))
+	mgrouter.POST("/user/import", context.Handle(user.UserImport))
 }

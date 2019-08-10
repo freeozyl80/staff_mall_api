@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"staff-mall-center/models/dao"
+	"staff-mall-center/pkg/bootstrap"
 	"staff-mall-center/pkg/setting"
 	"staff-mall-center/src/router"
 
@@ -14,6 +15,7 @@ import (
 func init() {
 	setting.Setup()
 	dao.Setup()
+	bootstrap.Setup()
 }
 
 func main() {

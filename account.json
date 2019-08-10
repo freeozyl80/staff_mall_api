@@ -1,0 +1,16 @@
+{
+  "accountlist": [
+    {
+      "username": "zhangyunlu",
+      "password": "zhangyunlu",
+      "realname": "张云路",
+      "usertype": 1
+    },
+    {
+      "username": "huangzongzhe",
+      "password": "huangzongzhe",
+      "realname": "黄宗哲",
+      "usertype": 1
+    }
+  ]
+}

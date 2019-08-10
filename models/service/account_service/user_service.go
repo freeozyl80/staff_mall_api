@@ -1,8 +1,10 @@
-package manage_service
+package account_service
 
 import (
 	"fmt"
 	"staff-mall-center/models/dao"
+	"staff-mall-center/pkg/setting"
+	"time"
 )
 
 type User struct {
@@ -11,6 +13,7 @@ type User struct {
 	Realname string
 	Usertype int
 }
+type ArrayUser []User
 
 func (u *User) Register() (bool, error) {
 	// 注册用户就看姓名 和 usertype 相同不相同
@@ -45,4 +48,23 @@ func (u *User) Check() (bool, error) {
 	}
 
 	return true, nil
+}
+
+func (ulist *ArrayUser) BuckRegister() ([]int, error) {
+	nowTime := time.Now().Unix()
+	user_list := make([]interface{}, len(*ulist))
+	for idx, val := range *ulist {
+		user_list[idx] = dao.User{
+			Username: val.Username,
+			Password: val.Password,
+			Realname: val.Realname,
+			Usertype: val.Usertype,
+			Salt1:    setting.CryptoSetting.Seed1,
+			Salt2:    setting.CryptoSetting.Seed2,
+			Model: dao.Model{
+				CreatedOn: nowTime,
+			},
+		}
+	}
+	return dao.BuckUpsertUser(user_list)
 }

@@ -2,7 +2,9 @@ package dao
 
 import (
 	"fmt"
+	"log"
 	"staff-mall-center/pkg/setting"
+	"strings"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -12,10 +14,10 @@ import (
 var db *gorm.DB
 
 type Model struct {
-	ID         int `gorm:"primary_key" json:"id"`
-	CreatedOn  int `json:"created_on"`
-	ModifiedOn int `json:"modified_on"`
-	DeletedOn  int `json:"deleted_on"`
+	ID         int   `gorm:"primary_key;auto_increment" json:"id"`
+	CreatedOn  int64 `json:"created_on"`
+	ModifiedOn int64 `json:"modified_on"`
+	DeletedOn  int64 `json:"deleted_on"`
 }
 
 func Setup() {
@@ -41,6 +43,24 @@ func Setup() {
 	db.Callback().Delete().Replace("gorm:delete", deleteCallback)
 	db.DB().SetMaxIdleConns(10)  //用于设置最大打开的连接数，默认值为0表示不限制。
 	db.DB().SetMaxOpenConns(100) //于设置闲置的连接数
+
+	if !db.HasTable(&User{}) {
+		log.Println("用户表创建ing")
+		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&User{})
+	}
+	if !db.HasTable(&Auth{}) {
+		log.Println("权限表创建ing")
+		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&Auth{})
+	}
+}
+func IsEstablish() bool {
+	if !db.HasTable(&User{}) {
+		return false
+	}
+	if !db.HasTable(&Auth{}) {
+		return false
+	}
+	return true
 }
 
 // CloseDB closes database connection (unnecessary)
@@ -52,13 +72,13 @@ func CloseDB() {
 func updateTimeStampForCreateCallback(scope *gorm.Scope) {
 	if !scope.HasError() {
 		nowTime := time.Now().Unix()
-		if createTimeField, ok := scope.FieldByName("CreatedOn"); ok {
+		if createTimeField, ok := scope.FieldByName("created_on"); ok {
 			if createTimeField.IsBlank {
 				createTimeField.Set(nowTime)
 			}
 		}
 
-		if modifyTimeField, ok := scope.FieldByName("ModifiedOn"); ok {
+		if modifyTimeField, ok := scope.FieldByName("modified_on"); ok {
 			if modifyTimeField.IsBlank {
 				modifyTimeField.Set(nowTime)
 			}
@@ -81,7 +101,7 @@ func deleteCallback(scope *gorm.Scope) {
 			extraOption = fmt.Sprint(str)
 		}
 
-		deletedOnField, hasDeletedOnField := scope.FieldByName("DeletedOn")
+		deletedOnField, hasDeletedOnField := scope.FieldByName("deleted_on")
 
 		if !scope.Search.Unscoped && hasDeletedOnField {
 			scope.Raw(fmt.Sprintf(
@@ -109,4 +129,75 @@ func addExtraSpaceIfExist(str string) string {
 		return " " + str
 	}
 	return ""
+}
+
+func BulkInsertOnDuplicateUpdate(db *gorm.DB, objArr []interface{}, updates string) ([]int, error) {
+	ids := []int{}
+	// If there is no data, nothing to do.
+	if len(objArr) == 0 {
+		return ids, nil
+	}
+
+	mainObj := objArr[0]
+	mainScope := db.NewScope(mainObj)
+	mainFields := mainScope.Fields()
+	quoted := make([]string, 0, len(mainFields))
+	for i := range mainFields {
+		// If primary key has blank value (0 for int, "" for string, nil for interface ...), skip it.
+		// If field is ignore field, skip it.
+		if (mainFields[i].IsPrimaryKey && mainFields[i].IsBlank) || (mainFields[i].IsIgnored) {
+			continue
+		}
+		quoted = append(quoted, mainScope.Quote(mainFields[i].DBName))
+	}
+
+	placeholdersArr := make([]string, 0, len(objArr))
+
+	for _, obj := range objArr {
+		scope := db.NewScope(obj)
+		fields := scope.Fields()
+		placeholders := make([]string, 0, len(fields))
+		for i := range fields {
+			if (fields[i].IsPrimaryKey && fields[i].IsBlank) || (fields[i].IsIgnored) {
+				continue
+			}
+			placeholders = append(placeholders, scope.AddToVars(fields[i].Field.Interface()))
+		}
+		placeholdersStr := "(" + strings.Join(placeholders, ", ") + ")"
+		placeholdersArr = append(placeholdersArr, placeholdersStr)
+		// add real variables for the replacement of placeholders' '?' letter later.
+		mainScope.SQLVars = append(mainScope.SQLVars, scope.SQLVars...)
+	}
+
+	mainScope.Raw(fmt.Sprintf("INSERT INTO %s (%s) VALUES %s ON DUPLICATE KEY UPDATE %s",
+		mainScope.QuotedTableName(),
+		strings.Join(quoted, ", "),
+		strings.Join(placeholdersArr, ", "),
+		updates,
+	))
+
+	if res, err := mainScope.SQLDB().Exec(mainScope.SQL, mainScope.SQLVars...); err != nil {
+		return ids, err
+	} else {
+		lastid, _ := res.LastInsertId()
+		len, _ := res.RowsAffected()
+
+		lastid2 := int(lastid) + 1
+		len2 := int(len)
+
+		for i := 0; i < len2; i++ {
+			ids = append(ids, lastid2)
+			lastid2 = lastid2 - 1
+		}
+
+		ids = reverse(ids)
+		return ids, err
+	}
+}
+
+func reverse(numbers []int) []int {
+	for i, j := 0, len(numbers)-1; i < j; i, j = i+1, j-1 {
+		numbers[i], numbers[j] = numbers[j], numbers[i]
+	}
+	return numbers
 }

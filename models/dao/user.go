@@ -12,7 +12,7 @@ import (
 type User struct {
 	Model
 
-	Username string `json:"username"`
+	Username string `gorm:"not null;unique" json:"username"`
 	Password string `json:"password"`
 	Usertype int    `json:"usertype"`
 	Realname string `json:"realname"`
@@ -43,7 +43,6 @@ func CheckUser(username, password string, usertype int) (bool, error) {
 	u.CryptoHandler(&password)
 
 	var user User
-
 	err := db.Select("id").Where(User{Username: username, Password: password, Usertype: usertype}).First(&user).Error
 
 	// 存在
@@ -74,16 +73,19 @@ func RegisterUser(username, password string, usertype int, realname string) erro
 	return nil
 }
 
-// func BulkInsert(unsavedRows []*ExampleRowStruct) error {
-// 	valueStrings := make([]string, 0, len(unsavedRows))
-// 	valueArgs := make([]interface{}, 0, len(unsavedRows) * 3)
-// 	for _, post := range unsavedRows {
-// 			valueStrings = append(valueStrings, "(?, ?, ?)")
-// 			valueArgs = append(valueArgs, post.Column1)
-// 			valueArgs = append(valueArgs, post.Column2)
-// 			valueArgs = append(valueArgs, post.Column3)
-// 	}
-// 	stmt := fmt.Sprintf("INSERT INTO my_sample_table (column1, column2, column3) VALUES %s", strings.Join(valueStrings, ","))
-// 	_, err := db.Exec(stmt, valueArgs...)
-// 	return err
-// }
+func BuckUpsertUser(objArr []interface{}) ([]int, error) {
+	ids, err := BulkInsertOnDuplicateUpdate(db, objArr,
+		"username = values(Username), password = values(Password), usertype = values(Usertype), realname = values(Realname),  salt1 = values(Salt1), salt2 = values(Salt2)")
+	return ids, err
+}
+
+// GetArticles gets a list of articles based on paging constraints
+func GetAccountList(pageIndex int, pageSize int, maps interface{}) ([]*User, error) {
+	var userlist []*User
+	err := db.Where(maps).Offset(pageIndex).Limit(pageSize).Find(&userlist).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	return userlist, nil
+}
