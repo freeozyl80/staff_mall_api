@@ -1,6 +1,7 @@
 package firm
 
 import (
+	"fmt"
 	"staff-mall-center/models/service/firm_service"
 	"staff-mall-center/pkg/context"
 	"staff-mall-center/pkg/e"
@@ -20,8 +21,9 @@ func FirmAdd(ctx *context.Context) {
 	uname, _ := ctx.Get("uname")
 	utype, _ := ctx.Get("utype")
 	uuid, _ := strconv.Atoi(uid.(string))
+	uutype, _ := strconv.Atoi(utype.(string))
 
-	if utype != 2 {
+	if uutype != 1 {
 		code = e.ERROR_AUTH_CHECK_TOKEN_FAIL
 		ctx.GenResError(code, "")
 		return
@@ -29,24 +31,27 @@ func FirmAdd(ctx *context.Context) {
 
 	firmname := ctx.PostForm("firmname")
 	firm_realname := ctx.PostForm("firm_realname")
-	banlance := ctx.PostForm("banlance")
+	balance := ctx.PostForm("balance")
 
-	if firmname == "" || firm_realname == "" || banlance == "" {
+	fmt.Println("-----------------", firmname, firm_realname, balance)
+
+	if firmname == "" || firm_realname == "" || balance == "" {
 		code = e.INVALID_PARAMS
 		ctx.GenResError(code, "")
 		return
 	}
-
-	banlanceInt, err := strconv.Atoi(banlance)
+	fmt.Println("-----------------")
+	balanceInt, err := strconv.Atoi(balance)
 
 	firm_service := firm_service.Firm{
 		UID:          uuid,
 		Username:     uname.(string),
 		Firmname:     firmname,
 		FirmRealname: firm_realname,
-		Balance:      banlanceInt,
+		Balance:      balanceInt,
 	}
 	isSucc, err := firm_service.CreateFirm()
+	fmt.Println("-----------------")
 	if err != nil {
 		code = e.ERROR
 		ctx.GenResError(code, "")
