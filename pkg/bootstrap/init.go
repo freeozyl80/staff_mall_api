@@ -53,8 +53,9 @@ func importSuperManager() error {
 
 		Auth := auth_service.Auth{
 			Username: val.Username,
-			Auth1:    1,
-			Auth2:    1,
+			Auth1:    "1",
+			Auth2:    "1",
+			Auth3:    "1",
 		}
 		authList = append(authList, Auth)
 	}

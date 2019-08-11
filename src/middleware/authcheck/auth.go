@@ -25,9 +25,10 @@ func AuthRequired(ctx *context.Context) {
 		code = e.ERROR_AUTH_CHECK_TOKEN_FAIL
 	} else {
 		obj, err := auth.ParseToken(token)
-
+		fmt.Println(obj)
 		ctx.Set("uname", obj.Username)
 		ctx.Set("utype", obj.Logintype)
+		ctx.Set("uid", obj.UID)
 		if err != nil {
 			switch err.(*jwt.ValidationError).Errors {
 			case jwt.ValidationErrorExpired:

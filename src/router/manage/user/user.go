@@ -21,26 +21,15 @@ type auth struct {
 	Password string `valid:"Required; MaxSize(50)"`
 }
 
-func login(name string, pwd string, logtype string) int {
+func login(user_service *account_service.User) int {
 	code := e.SUCCESS
 
-	if name == "" || pwd == "" {
+	if user_service.Username == "" || user_service.Password == "" {
 		code = e.INVALID_PARAMS
 		return code
 	}
 
-	user_service := account_service.User{Username: name, Password: pwd}
-
-	if logtype == "SuperAdmin" {
-		user_service.Usertype = 1
-	} else if logtype == "Admin" {
-		user_service.Usertype = 2
-	} else {
-		user_service.Usertype = 3
-	}
-
 	isRight, err := user_service.Check()
-
 	if err != nil {
 		code = e.ERROR
 		return code
@@ -52,20 +41,52 @@ func login(name string, pwd string, logtype string) int {
 
 	return code
 }
+func AuthInfo(ctx *context.Context) {
+	var code int
+	uname, _ := ctx.Get("uname")
+	uid, _ := ctx.Get("uid")
 
+	uuid, _ := strconv.Atoi(uid.(string))
+
+	auth_service := auth_service.Auth{Username: uname.(string), UID: uuid}
+
+	_, err := auth_service.Check()
+
+	if err != nil {
+		code = e.ERROR
+		ctx.GenResError(code, "请输入正确的用户名和密码")
+		return
+	}
+
+	values := map[string]interface{}{
+		"uid":     uid,
+		"uname":   uname,
+		"auth1":   auth_service.Auth1,
+		"auth2":   auth_service.Auth2,
+		"auth3":   auth_service.Auth3,
+		"succMsg": "获取权限成功",
+	}
+
+	ctx.GenResSuccess(values)
+	return
+}
 func AdminLogin(ctx *context.Context) {
 	name := ctx.PostForm("name")
 	pwd := ctx.PostForm("pwd")
 	logintype := ctx.PostForm("type")
+
+	user_service := account_service.User{Username: name, Password: pwd}
+
 	var code int
 
 	if logintype == "2" {
-		code = login(name, pwd, "Admin")
+		user_service.Usertype = 2
+		code = login(&user_service)
 	}
 	if logintype == "1" {
-		code = login(name, pwd, "SuperAdmin")
+		user_service.Usertype = 1
+		code = login(&user_service)
 	}
-
 	if code == e.INVALID_PARAMS {
 		ctx.GenResError(code, "请输入正确的用户名和密码")
 		return
@@ -78,7 +99,7 @@ func AdminLogin(ctx *context.Context) {
 
 	if code == e.SUCCESS {
 		values := map[string]string{"account": name, "succMsg": "登录成功"}
-		token, err := util.GenerateToken(name, logintype)
+		token, err := util.GenerateToken(name, logintype, strconv.Itoa(user_service.UID))
 
 		if err != nil {
 			code = e.ERROR_AUTH_TOKEN
@@ -98,7 +119,8 @@ func UserLogin(ctx *context.Context) {
 	name := ctx.PostForm("name")
 	pwd := ctx.PostForm("pwd")
 
-	code := login(name, pwd, "")
+	user_service := account_service.User{Username: name, Password: pwd, Usertype: 3}
+	code := login(&user_service)
 
 	if code == e.INVALID_PARAMS {
 		ctx.GenResError(code, "请输入正确的用户名和密码")
@@ -113,7 +135,7 @@ func UserLogin(ctx *context.Context) {
 	if code == e.SUCCESS {
 		values := map[string]string{"account": name, "succMsg": "登录成功"}
 
-		token, err := util.GenerateToken(name, "3")
+		token, err := util.GenerateToken(name, "3", strconv.Itoa(user_service.UID))
 
 		if err != nil {
 			code = e.ERROR_AUTH_TOKEN
@@ -223,7 +245,7 @@ func UserImport(ctx *context.Context) {
 	err = tools.Upload(file, filename)
 	// 处理文件
 	if err == nil {
-		_err, arr := tools.GenerateUserList(filename)
+		_err, arr := tools.GenerateDataList(filename)
 
 		if _err == nil {
 
@@ -251,14 +273,9 @@ func UserImport(ctx *context.Context) {
 				ctx.GenResError(code, "检查xlsx文件内容")
 				return
 			}
-
 			for num, item := range ids {
-				usertype, err := strconv.Atoi(arr[num+1][3])
-				if err != nil {
-					break
-				}
-
-				auth_item := auth_service.Auth{UID: item, Username: arr[num+1][0], Auth1: usertype, Auth2: 1}
+				fmt.Println(item)
+				auth_item := auth_service.Auth{UID: item, Username: arr[num+1][0], Auth1: arr[num+1][3], Auth2: "1", Auth3: "1"}
 
 				authList = append(authList, auth_item)
 			}

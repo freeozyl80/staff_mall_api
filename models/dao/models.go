@@ -52,12 +52,19 @@ func Setup() {
 		log.Println("权限表创建ing")
 		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&Auth{})
 	}
+	if !db.HasTable(&Firm{}) {
+		log.Println("公司表创建ing")
+		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&Firm{})
+	}
 }
 func IsEstablish() bool {
 	if !db.HasTable(&User{}) {
 		return false
 	}
 	if !db.HasTable(&Auth{}) {
+		return false
+	}
+	if !db.HasTable(&Firm{}) {
 		return false
 	}
 	return true
@@ -181,16 +188,13 @@ func BulkInsertOnDuplicateUpdate(db *gorm.DB, objArr []interface{}, updates stri
 	} else {
 		lastid, _ := res.LastInsertId()
 		len, _ := res.RowsAffected()
-
-		lastid2 := int(lastid) + 1
+		lastid2 := int(lastid)
 		len2 := int(len)
 
 		for i := 0; i < len2; i++ {
 			ids = append(ids, lastid2)
-			lastid2 = lastid2 - 1
+			lastid2 = lastid2 + 1
 		}
-
-		ids = reverse(ids)
 		return ids, err
 	}
 }

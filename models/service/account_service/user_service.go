@@ -8,6 +8,7 @@ import (
 )
 
 type User struct {
+	UID      int
 	Username string
 	Password string
 	Realname string
@@ -35,9 +36,9 @@ func (u *User) Register() (bool, error) {
 }
 
 func (u *User) Check() (bool, error) {
-	isExist, err := dao.CheckUser(u.Username, u.Password, u.Usertype)
+	uid, err := dao.CheckUser(u.Username, u.Password, u.Usertype)
 
-	if !isExist && err == nil {
+	if uid == 0 || err != nil {
 		fmt.Println("登录失败")
 		return false, nil
 	}
@@ -47,6 +48,7 @@ func (u *User) Check() (bool, error) {
 		return true, err
 	}
 
+	u.UID = uid
 	return true, nil
 }
 

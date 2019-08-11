@@ -30,7 +30,8 @@ type Database struct {
 }
 
 type Xlsx struct {
-	UserXlsx string
+	UserXlsx    string
+	ProductXlsx string
 }
 
 type Crypto struct {

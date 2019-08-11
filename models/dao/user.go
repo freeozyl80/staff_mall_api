@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"fmt"
+	"errors"
 	u "staff-mall-center/pkg/user"
 
 	"staff-mall-center/pkg/setting"
@@ -39,7 +39,7 @@ func ExistUser(username string, usertype int) (bool, error) {
 	return false, nil
 }
 
-func CheckUser(username, password string, usertype int) (bool, error) {
+func CheckUser(username, password string, usertype int) (int, error) {
 	u.CryptoHandler(&password)
 
 	var user User
@@ -47,15 +47,15 @@ func CheckUser(username, password string, usertype int) (bool, error) {
 
 	// 存在
 	if user.ID > 0 {
-		return true, nil
+		return user.ID, nil
 	}
 
 	// 有报错，且报错不是是没有找到
 	if err != nil && err != gorm.ErrRecordNotFound {
-		return false, err
+		return 0, err
 	}
 
-	return false, nil
+	return 0, errors.New("can't find res")
 }
 
 func RegisterUser(username, password string, usertype int, realname string) error {
@@ -63,8 +63,6 @@ func RegisterUser(username, password string, usertype int, realname string) erro
 	u.CryptoHandler(&password)
 
 	var user = User{Username: username, Password: password, Usertype: usertype, Realname: realname, Salt1: setting.CryptoSetting.Seed1, Salt2: setting.CryptoSetting.Seed2}
-
-	fmt.Println(user)
 
 	if err := db.Create(&user).Error; err != nil {
 		return err

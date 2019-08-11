@@ -4,7 +4,7 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 )
 
-func GenerateUserList(filename string) (error, [][]string) {
+func GenerateDataList(filename string) (error, [][]string) {
 	var arr [][]string
 
 	f, err := excelize.OpenFile(filename)

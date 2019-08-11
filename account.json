@@ -11,6 +11,12 @@
       "password": "huangzongzhe",
       "realname": "黄宗哲",
       "usertype": 1
+    },
+    {
+      "username": "yangjunyan",
+      "password": "yangjunyan",
+      "realname": "杨俊岩",
+      "usertype": 1
     }
   ]
 }
