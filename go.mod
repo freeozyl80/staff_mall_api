@@ -12,8 +12,11 @@ require (
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-ini/ini v0.0.0-20190327024845-3be5ad479f69
 	github.com/go-sql-driver/mysql v1.4.1
+	github.com/google/uuid v1.0.0
 	github.com/jinzhu/gorm v1.9.10
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826
+	github.com/pborman/uuid v1.2.0 // indirect
+	github.com/satori/go.uuid v1.2.0
 	golang.org/x/image v0.0.0-20190703141733-d6a02ce849c9 // indirect
 	gopkg.in/urfave/cli.v1 v1.20.0
 )

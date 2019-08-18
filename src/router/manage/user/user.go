@@ -7,6 +7,8 @@ import (
 	"staff-mall-center/models/dao"
 	"staff-mall-center/models/service/account_service"
 	"staff-mall-center/models/service/auth_service"
+	"staff-mall-center/models/service/firm_service"
+	"staff-mall-center/models/service/staff_service"
 	util "staff-mall-center/pkg/auth"
 	"staff-mall-center/pkg/context"
 	"staff-mall-center/pkg/e"
@@ -45,6 +47,7 @@ func AuthInfo(ctx *context.Context) {
 	var code int
 	uname, _ := ctx.Get("uname")
 	uid, _ := ctx.Get("uid")
+	utype, _ := ctx.Get("utype")
 
 	uuid, _ := strconv.Atoi(uid.(string))
 
@@ -61,6 +64,7 @@ func AuthInfo(ctx *context.Context) {
 	values := map[string]interface{}{
 		"uid":     uid,
 		"uname":   uname,
+		"utype":   utype,
 		"auth1":   auth_service.Auth1,
 		"auth2":   auth_service.Auth2,
 		"auth3":   auth_service.Auth3,
@@ -221,9 +225,15 @@ func UserList(ctx *context.Context) {
 }
 func UserImport(ctx *context.Context) {
 	var code int
-
 	file, info, err := ctx.Request.FormFile("file")
 
+	auth1 := ctx.PostForm("fid")
+
+	if len(auth1) < 1 {
+		code = e.INVALID_PARAMS
+		ctx.GenResError(code, "请选择fid")
+		return
+	}
 	if err != nil {
 		code = e.INVALID_PARAMS
 		ctx.GenResError(code, "请选择文件")
@@ -245,46 +255,74 @@ func UserImport(ctx *context.Context) {
 	err = tools.Upload(file, filename)
 	// 处理文件
 	if err == nil {
-		_err, arr := tools.GenerateDataList(filename)
+		err, arr := tools.GenerateDataList(filename)
 
-		if _err == nil {
+		if err == nil {
 
 			var accoutList = account_service.ArrayUser{}
 			var authList = auth_service.ArrayAuth{}
+			var staffList = staff_service.ArrayStaff{}
 
 			for num, row := range arr {
 				if num != 0 {
-					usertype, err := strconv.Atoi(row[3])
 					if err != nil {
 						break
 					}
-					user_item := account_service.User{Usertype: usertype, Username: row[0], Password: row[2], Realname: row[1]}
+					user_item := account_service.User{Usertype: 3, Username: row[0], Password: row[2], Realname: row[1]}
 					u.CryptoHandler(&user_item.Password)
 
 					accoutList = append(accoutList, user_item)
 
 				}
 			}
-			ids, uerror := accoutList.BuckRegister()
+			ids, err := accoutList.BuckRegister()
 
-			if uerror != nil {
-				fmt.Println(uerror)
+			if err != nil {
+				fmt.Println(err)
 				code = e.INVALID_PARAMS
-				ctx.GenResError(code, "检查xlsx文件内容")
+				ctx.GenResError(code, err.Error())
 				return
 			}
 			for num, item := range ids {
-				fmt.Println(item)
-				auth_item := auth_service.Auth{UID: item, Username: arr[num+1][0], Auth1: arr[num+1][3], Auth2: "1", Auth3: "1"}
 
+				auth_item := auth_service.Auth{UID: item, Username: arr[num+1][0], Auth1: auth1, Auth2: "1", Auth3: "1"}
+
+				fid, _ := strconv.Atoi(auth1)
+				var staff_item_firm = firm_service.Firm{
+					Fid: fid,
+				}
+				err = staff_item_firm.FindFirm()
+
+				if err != nil {
+					code = e.INVALID_PARAMS
+					ctx.GenResError(code, err.Error())
+					return
+				}
+
+				staff_item := staff_service.Staff{
+					UID:          item,
+					Username:     arr[num+1][0],
+					Realname:     arr[num+1][1],
+					FID:          fid,
+					Firmname:     staff_item_firm.Firmname,
+					FirmRealname: staff_item_firm.FirmRealname,
+				}
 				authList = append(authList, auth_item)
+				staffList = append(staffList, staff_item)
 			}
 
-			_, aeeor := authList.BuckRegister()
+			_, err = authList.BuckRegister()
 
-			if aeeor != nil {
+			if err != nil {
 				code = e.INVALID_PARAMS
-				ctx.GenResError(code, "检查xlsx文件内容")
+				ctx.GenResError(code, err.Error())
+				return
+			}
+
+			_, err = staffList.BuckRegister()
+			if err != nil {
+				code = e.INVALID_PARAMS
+				ctx.GenResError(code, err.Error())
 				return
 			}
 
@@ -310,4 +348,35 @@ func UserImport(ctx *context.Context) {
 
 func AddUser(ctx *context.Context) {
 
+}
+
+func DelegateManager(ctx *context.Context) {
+	var code int
+
+	uid, _ := strconv.Atoi(ctx.Query("uid"))
+	updateType := ctx.Query("type")
+
+	var updateUserValues map[string]interface{}
+	var updateAuthValues map[string]interface{}
+	if updateType == "on" {
+		updateUserValues = map[string]interface{}{"usertype": 2}
+		updateAuthValues = map[string]interface{}{"auth2": "1000", "auth3": "1000"}
+	}
+
+	if updateType == "off" {
+		updateUserValues = map[string]interface{}{"usertype": 3}
+		updateAuthValues = map[string]interface{}{"auth2": "1", "auth3": "1"}
+	}
+	err := dao.UpdateUser(uid, updateUserValues)
+
+	err = dao.UpdateAuth(uid, updateAuthValues)
+
+	if err != nil {
+		code = e.ERROR
+		ctx.GenResError(code, err.Error())
+		return
+	}
+
+	values := map[string]string{"succMsg": "管理员设定成功"}
+	ctx.GenResSuccess(values)
 }

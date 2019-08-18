@@ -1,18 +1,17 @@
 package dao
 
-import "staff-mall-center/pkg/setting"
+import (
+	"errors"
+	"fmt"
+
+	"github.com/jinzhu/gorm"
+)
 
 type Firm struct {
 	Model
 	//	企业相关信息
-	Fid          int    `gorm:"not null;unique" json:"fid"`
-	Firmname     string `json:"firm_name"`
+	Firmname     string `gorm:"not null;unique" json:"firm_name"`
 	FirmRealname string `json:"firm_realname"`
-
-	// 企业负责人相关新
-	UID      int    `gorm:"not null;unique" json:"uid"`
-	Username string `json:"username"`
-
 	// 企业其他信息
 
 	Balance int `gorm:"not null; default:0" json:"balance"`
@@ -26,20 +25,14 @@ type Firm struct {
 	FirmStatus int `gorm:"not null; default:1" json:"firm_status"`
 }
 
-func (Firm) TableName() string {
-	return setting.DatabaseSetting.TablePrefix + "firm"
-}
-
 func BuckUpsertFirm(objArr []interface{}) ([]int, error) {
 	ids, err := BulkInsertOnDuplicateUpdate(db, objArr,
-		"firmname = values(Firmname), firm_realname = values(FirmRealname), uid = values(UID), username = values(Username), balance = values(Balance), firmtatus = values(FirmStatus)")
+		"firmname = values(Firmname), firm_realname = values(FirmRealname), balance = values(Balance), firmtatus = values(FirmStatus)")
 	return ids, err
 }
 
-func CreateFirm(uid, firm_status, balance int, firmname, firm_realname, username, category_group, product_group string) error {
+func CreateFirm(firm_status, balance int, firmname, firm_realname, category_group, product_group string) error {
 	var firm = Firm{
-		UID:           uid,
-		Username:      username,
 		Firmname:      firmname,
 		FirmRealname:  firm_realname,
 		Balance:       balance,
@@ -49,8 +42,40 @@ func CreateFirm(uid, firm_status, balance int, firmname, firm_realname, username
 	}
 
 	if err := db.Create(&firm).Error; err != nil {
+		fmt.Println(err)
 		return err
 	}
 
 	return nil
+}
+
+func GetFirmList(pageIndex int, pageSize int, maps interface{}) ([]*Firm, error) {
+	var firmList []*Firm
+	err := db.Where(maps).Offset(pageIndex).Limit(pageSize).Find(&firmList).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	return firmList, nil
+}
+
+func UpdateFirm(id int, data interface{}) error {
+	if err := db.Model(&Firm{}).Where("id = ?", id).Updates(data).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetFirmItem(id int) (Firm, error) {
+	var firm Firm
+
+	err := db.Where("id = ?", id).First(&firm).Error
+
+	// 存在
+	if firm.ID > 0 && err == nil {
+		return firm, nil
+	} else {
+		return firm, errors.New("can not find")
+	}
 }

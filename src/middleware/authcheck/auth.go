@@ -25,7 +25,10 @@ func AuthRequired(ctx *context.Context) {
 		code = e.ERROR_AUTH_CHECK_TOKEN_FAIL
 	} else {
 		obj, err := auth.ParseToken(token)
-		fmt.Println(obj)
+		if obj == nil {
+			ctx.GenResError(e.ERROR_AUTH_CHECK_TOKEN_FAIL, "鉴权失败")
+			ctx.Abort()
+		}
 		ctx.Set("uname", obj.Username)
 		ctx.Set("utype", obj.Logintype)
 		ctx.Set("uid", obj.UID)

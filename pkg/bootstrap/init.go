@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 	"path/filepath"
-	"staff-mall-center/models/dao"
 	"staff-mall-center/models/service/account_service"
 	"staff-mall-center/models/service/auth_service"
 	u "staff-mall-center/pkg/user"
@@ -29,9 +28,9 @@ func Setup() {
 }
 
 func importSuperManager() error {
-	if istablish := dao.IsEstablish(); istablish {
-		return nil
-	}
+	// if istablish := dao.IsEstablish(); istablish {
+	// 	return nil
+	// }
 	fmt.Println("数据库 建表完成，开始导入数据")
 
 	var accoutList = account_service.ArrayUser{}
@@ -53,9 +52,9 @@ func importSuperManager() error {
 
 		Auth := auth_service.Auth{
 			Username: val.Username,
-			Auth1:    "1",
-			Auth2:    "1",
-			Auth3:    "1",
+			Auth1:    "10000",
+			Auth2:    "10000",
+			Auth3:    "10000",
 		}
 		authList = append(authList, Auth)
 	}

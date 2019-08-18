@@ -4,6 +4,7 @@ import (
 	"staff-mall-center/pkg/context"
 	"staff-mall-center/src/middleware/authcheck"
 	"staff-mall-center/src/router/manage/firm"
+	"staff-mall-center/src/router/manage/product"
 	"staff-mall-center/src/router/manage/user"
 
 	"github.com/gin-gonic/gin"
@@ -27,9 +28,12 @@ func MangeRouterInit(mgrouter *gin.RouterGroup) {
 	// 公司列表操作
 	mgrouter.GET("/firm/list", context.Handle(firm.FirmList))
 	mgrouter.POST("/firm/add", context.Handle(firm.FirmAdd))
+	mgrouter.GET("/firm/account", context.Handle(firm.AccountList))
+	mgrouter.GET("/firm/delegate", context.Handle(user.DelegateManager))
 
 	// 商品操作
-
-	//mgrouter.GET("/product/import", context.Handle(product.ProductImport))
+	mgrouter.POST("/product/import", context.Handle(product.ProductImport))
+	mgrouter.GET("/product/list", context.Handle(product.ProductList))
+	mgrouter.GET("/product/firm/list", context.Handle(product.ProductFirmList))
 
 }

@@ -14,7 +14,7 @@ import (
 var db *gorm.DB
 
 type Model struct {
-	ID         int   `gorm:"primary_key;auto_increment" json:"id"`
+	ID         int   `gorm:"primary_key;auto_increment:10" json:"id"`
 	CreatedOn  int64 `json:"created_on"`
 	ModifiedOn int64 `json:"modified_on"`
 	DeletedOn  int64 `json:"deleted_on"`
@@ -56,6 +56,22 @@ func Setup() {
 		log.Println("公司表创建ing")
 		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&Firm{})
 	}
+	if !db.HasTable(&Product{}) {
+		log.Println("商品表创建ing")
+		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&Product{})
+	}
+	if !db.HasTable(&Category{}) {
+		log.Println("品类表创建ing")
+		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&Category{})
+	}
+	if !db.HasTable(&Staff{}) {
+		log.Println("员工表创建ing")
+		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&Staff{})
+	}
+	if !db.HasTable(&Order{}) {
+		log.Println("订单表创建ing")
+		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&Order{})
+	}
 }
 func IsEstablish() bool {
 	if !db.HasTable(&User{}) {
@@ -65,6 +81,18 @@ func IsEstablish() bool {
 		return false
 	}
 	if !db.HasTable(&Firm{}) {
+		return false
+	}
+	if !db.HasTable(&Product{}) {
+		return false
+	}
+	if !db.HasTable(&Category{}) {
+		return false
+	}
+	if !db.HasTable(&Staff{}) {
+		return false
+	}
+	if !db.HasTable(&Order{}) {
 		return false
 	}
 	return true
@@ -182,7 +210,8 @@ func BulkInsertOnDuplicateUpdate(db *gorm.DB, objArr []interface{}, updates stri
 		strings.Join(placeholdersArr, ", "),
 		updates,
 	))
-
+	fmt.Println(mainScope.SQL)
+	fmt.Println(mainScope.SQLVars...)
 	if res, err := mainScope.SQLDB().Exec(mainScope.SQL, mainScope.SQLVars...); err != nil {
 		return ids, err
 	} else {

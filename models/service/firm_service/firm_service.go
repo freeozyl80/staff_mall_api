@@ -1,15 +1,12 @@
 package firm_service
 
 import (
-	"fmt"
 	"staff-mall-center/models/dao"
 	"time"
 )
 
 type Firm struct {
 	Fid          int
-	UID          int
-	Username     string
 	Firmname     string
 	FirmRealname string
 
@@ -25,8 +22,6 @@ func (firmlist *ArrayFirm) BuckRegister() ([]int, error) {
 	firm_list := make([]interface{}, len(*firmlist))
 	for idx, val := range *firmlist {
 		firm_list[idx] = dao.Firm{
-			Username:      val.Username,
-			UID:           val.UID,
 			Balance:       val.Balance,
 			FirmRealname:  val.FirmRealname,
 			Firmname:      val.Firmname,
@@ -42,10 +37,17 @@ func (firmlist *ArrayFirm) BuckRegister() ([]int, error) {
 }
 
 func (firm *Firm) CreateFirm() (bool, error) {
-	err := dao.CreateFirm(firm.UID, firm.FirmStatus, firm.Balance, firm.Firmname, firm.FirmRealname, firm.Username, firm.CategoryGroup, firm.CategoryGroup)
+	err := dao.CreateFirm(firm.FirmStatus, firm.Balance, firm.Firmname, firm.FirmRealname, firm.CategoryGroup, firm.CategoryGroup)
 	if err != nil {
-		fmt.Println("internal Error")
 		return false, err
 	}
 	return true, nil
+}
+
+func (firm *Firm) FindFirm() error {
+	f, err := dao.GetFirmItem(firm.Fid)
+	firm.Firmname = f.Firmname
+	firm.CategoryGroup = f.CategoryGroup
+	firm.ProductGroup = f.ProductGroup
+	return err
 }

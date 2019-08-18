@@ -30,7 +30,6 @@ func ExistUser(username string, usertype int) (bool, error) {
 	if user.ID > 0 {
 		return true, nil
 	}
-
 	// 有报错，且报错不是是没有找到
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return false, err
@@ -49,7 +48,6 @@ func CheckUser(username, password string, usertype int) (int, error) {
 	if user.ID > 0 {
 		return user.ID, nil
 	}
-
 	// 有报错，且报错不是是没有找到
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return 0, err
@@ -77,7 +75,6 @@ func BuckUpsertUser(objArr []interface{}) ([]int, error) {
 	return ids, err
 }
 
-// GetArticles gets a list of articles based on paging constraints
 func GetAccountList(pageIndex int, pageSize int, maps interface{}) ([]*User, error) {
 	var userlist []*User
 	err := db.Where(maps).Offset(pageIndex).Limit(pageSize).Find(&userlist).Error
@@ -86,4 +83,12 @@ func GetAccountList(pageIndex int, pageSize int, maps interface{}) ([]*User, err
 	}
 
 	return userlist, nil
+}
+
+func UpdateUser(id int, data interface{}) error {
+	if err := db.Model(&User{}).Where("id = ?", id).Updates(data).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

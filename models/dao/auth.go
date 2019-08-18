@@ -2,7 +2,6 @@ package dao
 
 import (
 	"errors"
-	"staff-mall-center/pkg/setting"
 
 	"github.com/jinzhu/gorm"
 )
@@ -17,16 +16,13 @@ type Auth struct {
 	Auth3    string `gorm:"default:'1'" json:"auth3"`
 }
 
-func (Auth) TableName() string {
-	return setting.DatabaseSetting.TablePrefix + "auth"
-}
-
 func CheckAuth(username string, uid int) (Auth, error) {
 	var auth Auth
 
 	err := db.Where(Auth{UID: uid, Username: username}).First(&auth).Error
 
 	// 存在
+
 	if auth.ID > 0 {
 		return auth, nil
 	}
@@ -43,4 +39,22 @@ func BuckUpsertAuth(objArr []interface{}) ([]int, error) {
 	ids, err := BulkInsertOnDuplicateUpdate(db, objArr,
 		"username = values(Username), uid = values(UID), auth1 = values(Auth1), auth2 = values(Auth2), auth3 = values(Auth3)")
 	return ids, err
+}
+
+func GetAuthList(pageIndex int, pageSize int, maps interface{}) ([]*Auth, error) {
+	var authList []*Auth
+	err := db.Where(maps).Offset(pageIndex).Limit(pageSize).Find(&authList).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	return authList, nil
+}
+
+func UpdateAuth(id int, data interface{}) error {
+	if err := db.Model(&Auth{}).Where("id = ?", id).Updates(data).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
