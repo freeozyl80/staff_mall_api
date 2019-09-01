@@ -137,18 +137,19 @@ func UserLogin(ctx *context.Context) {
 	}
 
 	if code == e.SUCCESS {
-		values := map[string]string{"account": name, "succMsg": "登录成功"}
 
 		token, err := util.GenerateToken(name, "3", strconv.Itoa(user_service.UID))
-
+		expired := 30 * 24 * 60 * 60
 		if err != nil {
 			code = e.ERROR_AUTH_TOKEN
 			ctx.GenResError(code, "")
 			return
 		} else {
-			ctx.SetCookie("hualvmall_authorization", token, 30*24*60*60, "/", "", false, false)
+			ctx.SetCookie("hualvmall_staff_authorization", token, expired, "/", "", false, false)
 		}
+		expiredStr := strconv.Itoa(expired)
 
+		values := map[string]string{"account": name, "token": token, "expired": expiredStr, "succMsg": "登录成功"}
 		ctx.GenResSuccess(values)
 		return
 	}
@@ -292,7 +293,8 @@ func UserImport(ctx *context.Context) {
 					Fid: fid,
 				}
 				err = staff_item_firm.FindFirm()
-
+				fmt.Println("----------------------")
+				fmt.Printf("%+v\n", staff_item_firm)
 				if err != nil {
 					code = e.INVALID_PARAMS
 					ctx.GenResError(code, err.Error())

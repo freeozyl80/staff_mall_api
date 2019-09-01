@@ -46,7 +46,11 @@ func (firm *Firm) CreateFirm() (bool, error) {
 
 func (firm *Firm) FindFirm() error {
 	f, err := dao.GetFirmItem(firm.Fid)
+	if err != nil {
+		return err
+	}
 	firm.Firmname = f.Firmname
+	firm.FirmRealname = f.FirmRealname
 	firm.CategoryGroup = f.CategoryGroup
 	firm.ProductGroup = f.ProductGroup
 	return err

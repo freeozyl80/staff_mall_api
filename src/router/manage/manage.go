@@ -13,7 +13,6 @@ import (
 func MangeRouterInit(mgrouter *gin.RouterGroup) {
 	// 用户登录
 	mgrouter.POST("/admin/login", context.Handle(user.AdminLogin))
-	mgrouter.POST("/user/login", context.Handle(user.UserLogin))
 
 	// access
 	mgrouter.Use(context.Handle(authcheck.AuthRequired))

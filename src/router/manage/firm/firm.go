@@ -33,7 +33,7 @@ func FirmList(ctx *context.Context) {
 		firmResList = append(firmResList, item)
 	}
 
-	values := map[string]interface{}{"page": "page", "pageSize": "pageSize", "succMsg": "查询成功", "list": firmResList}
+	values := map[string]interface{}{"page": pageIndex, "pageSize": pageSize, "succMsg": "查询成功", "list": firmResList}
 
 	ctx.GenResSuccess(values)
 }

@@ -1,6 +1,10 @@
 package dao
 
-import "github.com/jinzhu/gorm"
+import (
+	"errors"
+
+	"github.com/jinzhu/gorm"
+)
 
 type Product struct {
 	Model
@@ -39,4 +43,34 @@ func GetProductList(pageIndex int, pageSize int, maps interface{}) ([]*Product, 
 	}
 
 	return productList, nil
+}
+
+func GetProductItem(id int) (Product, error) {
+	var product Product
+
+	err := db.Where("id = ?", id).First(&product).Error
+
+	// 存在
+	if product.ID > 0 && err == nil {
+		return product, nil
+	} else {
+		return product, errors.New("can not find")
+	}
+}
+func OccupyProductItem(id int, count int) (Product, error) {
+	var product Product
+
+	err := db.Where("id = ?", id).First(&product).Error
+
+	// 存在
+	if product.ID > 0 && err == nil && (product.ProductCount-count) >= 0 {
+		var leftCount = product.ProductCount - count
+		err = db.Model(&Product{}).Where("id = ?", id).Update("ProductCount", leftCount).Error
+		if err != nil {
+			return product, errors.New("occpuy faild")
+		}
+		return product, nil
+	} else {
+		return product, errors.New("can not find")
+	}
 }

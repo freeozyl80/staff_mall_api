@@ -15,9 +15,9 @@ type Staff struct {
 	Firmname     string
 	FirmRealname string
 
-	Gender   int
-	Addresss string
-	Avartar  string
+	Gender      int
+	UserAddress string
+	UserAvatar  string
 
 	Tel      int
 	Birthday int
@@ -39,12 +39,34 @@ func (plist *ArrayStaff) BuckRegister() ([]int, error) {
 			Firmname:     val.Firmname,
 			FirmRealname: val.FirmRealname,
 			Gender:       val.Gender,
-			Addresss:     val.Addresss,
-			Avartar:      val.Avartar,
+			UserAddress:  val.UserAddress,
+			UserAvatar:   val.UserAvatar,
 			Model: dao.Model{
 				CreatedOn: nowTime,
 			},
 		}
 	}
 	return dao.BuckUpsertStaff(user_list)
+}
+
+func (staff *Staff) GetInfo() error {
+
+	_staff, err := dao.GetStaffItem(staff.UID)
+
+	if err != nil {
+		return err
+	}
+
+	staff.UID = _staff.UID
+	staff.Username = _staff.Username
+	staff.Realname = _staff.Realname
+	staff.Tel = _staff.Tel
+	staff.Birthday = _staff.Birthday
+	staff.Coin = _staff.Coin
+	staff.Firmname = _staff.Firmname
+	staff.FirmRealname = _staff.FirmRealname
+	staff.Gender = _staff.Gender
+	staff.UserAddress = _staff.UserAddress
+	staff.UserAvatar = _staff.UserAvatar
+	return err
 }

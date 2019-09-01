@@ -210,8 +210,6 @@ func BulkInsertOnDuplicateUpdate(db *gorm.DB, objArr []interface{}, updates stri
 		strings.Join(placeholdersArr, ", "),
 		updates,
 	))
-	fmt.Println(mainScope.SQL)
-	fmt.Println(mainScope.SQLVars...)
 	if res, err := mainScope.SQLDB().Exec(mainScope.SQL, mainScope.SQLVars...); err != nil {
 		return ids, err
 	} else {

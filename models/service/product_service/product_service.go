@@ -44,3 +44,39 @@ func (plist *ArrayProduct) BuckRegister() ([]int, error) {
 	}
 	return dao.BuckUpsertProduct(user_list)
 }
+
+func (product *Product) GetInfo() error {
+	_product, err := dao.GetProductItem(product.PID)
+
+	if err != nil {
+		return err
+	}
+
+	product.PID = _product.ID
+	product.ProductName = _product.ProductName
+	product.ProductRealname = _product.ProductRealname
+	product.ProductPrice = _product.ProductPrice
+	product.ProductStatus = _product.ProductStatus
+	product.ProductDesc = _product.ProductDesc
+	product.ProductImg = _product.ProductImg
+	product.ProductCount = _product.ProductCount
+
+	product.CategoryID = _product.CategoryID
+	product.CategoryName = _product.CategoryName
+	product.CategoryName = _product.CategoryName
+
+	return err
+}
+
+func (product *Product) Occupy(count int) error {
+	_product, err := dao.OccupyProductItem(product.PID, count)
+
+	if err != nil {
+		return err
+	}
+
+	product.PID = _product.ID
+	product.ProductPrice = _product.ProductPrice
+
+	return err
+}
