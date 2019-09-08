@@ -56,22 +56,33 @@ func StaffRequire(ctx *context.Context) {
 	code = e.SUCCESS
 
 	headers := ctx.Request.Header["Hualvmall_staff_authorization"]
+	headersRedict := ctx.Request.Header["Hualvmall_authorization"]
 
 	if len(headers) > 0 {
 		token = headers[0]
+	}
+	if len(headersRedict) > 0 {
+		obj, err := auth.ParseToken(headersRedict[0])
+		if obj == nil || err != nil {
+			ctx.GenResError(e.ERROR_AUTH_CHECK_TOKEN_FAIL, "鉴权失败")
+			ctx.Abort()
+			return
+		} else {
+			ctx.Next()
+			return
+		}
 	}
 
 	if token == "" {
 		code = e.ERROR_AUTH_CHECK_TOKEN_FAIL
 	} else {
 		obj, err := auth.ParseToken(token)
-		fmt.Printf("%+v\n", obj)
 		if obj == nil {
 			ctx.GenResError(e.ERROR_AUTH_CHECK_TOKEN_FAIL, "鉴权失败")
 			ctx.Abort()
+			return
 		}
 		// 获取 uid 信息
-
 		ctx.Set("uid", obj.UID)
 
 		if err != nil {
@@ -88,6 +99,7 @@ func StaffRequire(ctx *context.Context) {
 	if code != e.SUCCESS {
 		ctx.GenResError(code, "")
 		ctx.Abort()
+		return
 	}
 	ctx.Next()
 }

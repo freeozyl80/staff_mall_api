@@ -1,6 +1,7 @@
 package order_service
 
 import (
+	"fmt"
 	"staff-mall-center/models/dao"
 
 	uuid "github.com/satori/go.uuid"
@@ -42,6 +43,32 @@ func (o *Order) Generate() error {
 	)
 
 	o.OrderID = order.OrderID
+
+	return err
+}
+
+func (o *Order) GetOrderInfo() error {
+	_order, err := dao.GetOrderItem(o.UID, o.OrderID)
+	fmt.Printf("%+v\n", _order)
+	if err != nil {
+		return err
+	}
+
+	o.OrderID = _order.OrderID
+
+	o.OrderStatus = _order.OrderStatus
+	o.ProductInfo = _order.ProductInfo
+	o.ProductInfo = _order.ProductInfo
+	o.ProductTotalPrice = _order.ProductTotalPrice
+
+	o.Username = _order.Username
+	o.Realname = _order.Realname
+	o.Tel = _order.Tel
+
+	o.ReceivingUsername = _order.ReceivingUsername
+	o.ReceivingUserTel = _order.ReceivingUserTel
+	o.ReceivingUserAddress = _order.ReceivingUserAddress
+	o.ReceivingUserCity = _order.ReceivingUserCity
 
 	return err
 }

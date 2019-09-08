@@ -64,12 +64,15 @@ func OccupyProductItem(id int, count int) (Product, error) {
 
 	// 存在
 	if product.ID > 0 && err == nil && (product.ProductCount-count) >= 0 {
+
 		var leftCount = product.ProductCount - count
 		err = db.Model(&Product{}).Where("id = ?", id).Update("ProductCount", leftCount).Error
 		if err != nil {
 			return product, errors.New("occpuy faild")
 		}
 		return product, nil
+	} else if product.ProductCount-count < 0 {
+		return product, errors.New("OverRemain")
 	} else {
 		return product, errors.New("can not find")
 	}

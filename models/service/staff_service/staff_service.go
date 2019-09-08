@@ -11,7 +11,7 @@ type Staff struct {
 	Username string
 
 	Realname     string
-	FID          int
+	Fid          int
 	Firmname     string
 	FirmRealname string
 
@@ -36,6 +36,7 @@ func (plist *ArrayStaff) BuckRegister() ([]int, error) {
 			Tel:          val.Tel,
 			Birthday:     val.Birthday,
 			Coin:         val.Coin,
+			Fid:          val.Fid,
 			Firmname:     val.Firmname,
 			FirmRealname: val.FirmRealname,
 			Gender:       val.Gender,
@@ -63,6 +64,7 @@ func (staff *Staff) GetInfo() error {
 	staff.Tel = _staff.Tel
 	staff.Birthday = _staff.Birthday
 	staff.Coin = _staff.Coin
+	staff.Fid = _staff.Fid
 	staff.Firmname = _staff.Firmname
 	staff.FirmRealname = _staff.FirmRealname
 	staff.Gender = _staff.Gender

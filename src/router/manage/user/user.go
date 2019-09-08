@@ -2,6 +2,7 @@ package user
 
 import (
 	"fmt"
+	"net/http"
 	"path"
 	"path/filepath"
 	"staff-mall-center/models/dao"
@@ -305,7 +306,7 @@ func UserImport(ctx *context.Context) {
 					UID:          item,
 					Username:     arr[num+1][0],
 					Realname:     arr[num+1][1],
-					FID:          fid,
+					Fid:          staff_item_firm.Fid,
 					Firmname:     staff_item_firm.Firmname,
 					FirmRealname: staff_item_firm.FirmRealname,
 				}
@@ -381,4 +382,14 @@ func DelegateManager(ctx *context.Context) {
 
 	values := map[string]string{"succMsg": "管理员设定成功"}
 	ctx.GenResSuccess(values)
+}
+
+func StaffInfo(ctx *context.Context) {
+	url := fmt.Sprintf("/wx/user/info?uid=%v&fid=%v", ctx.Query("uid"), ctx.Query("fid"))
+	ctx.Redirect(http.StatusMovedPermanently, url)
+}
+
+func StaffOperate(ctx *context.Context) {
+	url := fmt.Sprintf("/wx/user/update?uid=%v&fid=%v&data=%v", ctx.Query("uid"), ctx.Query("fid"), ctx.PostForm("data"))
+	ctx.Redirect(http.StatusMovedPermanently, url)
 }

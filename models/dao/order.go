@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/jinzhu/gorm"
 	uuid "github.com/satori/go.uuid"
@@ -10,7 +10,7 @@ import (
 type Order struct {
 	Model
 	OrderID     uuid.UUID `gorm:"not null;"`
-	OrderStatus int       `gorm:"not null;" json:"order_status"`
+	OrderStatus int       `gorm:"not null;" json:"order_status" comment '1: 下定， 2.代表支付成，3.发货完成，4. 收货完成， 5. 取消，6，退换中， 7异常'`
 
 	ProductInfo       string `gorm:"not null;" json:"product_info"`
 	ProductTotalPrice int    `gorm:"not null;" json:"product_total_price"`
@@ -70,11 +70,31 @@ func GenerateOrder(
 }
 func GetOrderList(pageIndex int, pageSize int, maps interface{}) ([]*Order, error) {
 	var orderList []*Order
-	fmt.Printf("%+v\n", maps)
 	err := db.Where(maps).Offset(pageIndex).Limit(pageSize).Find(&orderList).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
 
 	return orderList, nil
+}
+
+func GetOrderItem(uid int, orderId uuid.UUID) (Order, error) {
+	var order Order
+
+	err := db.Where(Order{UID: uid, OrderID: orderId}).First(&order).Error
+
+	if order.ID > 0 && err == nil {
+		return order, nil
+	} else {
+		return order, errors.New("can not find")
+	}
+}
+
+func UpdateOrderItem(uid int, orderId uuid.UUID, data interface{}) error {
+
+	if err := db.Model(&Order{}).Where(Order{UID: uid, OrderID: orderId}).Updates(data).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

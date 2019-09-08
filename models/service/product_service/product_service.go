@@ -72,6 +72,11 @@ func (product *Product) Occupy(count int) error {
 	_product, err := dao.OccupyProductItem(product.PID, count)
 
 	if err != nil {
+		if err.Error() == "OverRemain" {
+			product.PID = _product.ID
+			product.ProductCount = _product.ProductCount
+			return err
+		}
 		return err
 	}
 

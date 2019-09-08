@@ -16,11 +16,13 @@ func WxRouterInit(wrouter *gin.RouterGroup) {
 	wrouter.GET("/product/firm/list", context.Handle(product.ProductFirmList))
 	wrouter.GET("/category/firm/list", context.Handle(product.CategoryFirmList))
 
-	wrouter.GET("/user/:uid", context.Handle(staff.UserInfo))
-
 	wrouter.POST("/user/login", context.Handle(user.UserLogin))
 
 	wrouter.Use(context.Handle(authcheck.StaffRequire))
+	wrouter.GET("/user/info", context.Handle(staff.UserInfo))
+	wrouter.GET("/user/update", context.Handle(staff.UpdateUserInfo))
 	wrouter.POST("/product/order", context.Handle(order.GenerateOrder))
 	wrouter.GET("/order/list", context.Handle(order.ListOrder))
+	wrouter.GET("/order/item/:id", context.Handle(order.GetOrderInfo))
+	wrouter.POST("/order/item/:id/operate", context.Handle(order.OperateOrder))
 }

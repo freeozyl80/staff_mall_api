@@ -52,3 +52,21 @@ func GetStaffItem(id int) (Staff, error) {
 		return staff, errors.New("can not find")
 	}
 }
+
+func UpdateStaffItem(uid int, data interface{}) error {
+
+	if err := db.Model(&Staff{}).Where(Staff{UID: uid}).Updates(data).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UpdateStaffInfo(uid int, fid int, data interface{}) error {
+
+	if err := db.Model(&Staff{}).Where(Staff{UID: uid, Fid: fid}).Updates(data).Error; err != nil {
+		return err
+	}
+
+	return nil
+}

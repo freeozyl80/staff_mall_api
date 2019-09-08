@@ -24,6 +24,9 @@ func MangeRouterInit(mgrouter *gin.RouterGroup) {
 	mgrouter.POST("/user/register", context.Handle(user.UserRegister))
 	mgrouter.POST("/user/import", context.Handle(user.UserImport))
 
+	mgrouter.GET("/firm/staff", context.Handle(user.StaffInfo))
+	mgrouter.POST("/firm/staff/operate", context.Handle(user.StaffOperate))
+
 	// 公司列表操作
 	mgrouter.GET("/firm/list", context.Handle(firm.FirmList))
 	mgrouter.POST("/firm/add", context.Handle(firm.FirmAdd))
