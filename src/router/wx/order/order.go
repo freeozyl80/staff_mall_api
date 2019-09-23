@@ -74,7 +74,7 @@ func GenerateOrder(ctx *context.Context) {
 	// 所有订单库存都不够，所有直接返回，不生产订单
 	if len(productResList) == 0 {
 		code := e.INVALID_PARAMS
-		ctx.GenResError(code, "生产订单失败，请核数据")
+		ctx.GenResError(code, "生成订单失败，请核数据")
 		return
 	}
 
@@ -105,6 +105,8 @@ func GenerateOrder(ctx *context.Context) {
 		Username: staff_item.Username,
 		Realname: staff_item.Realname,
 		Tel:      staff_item.Tel,
+
+		Fid: staff_item.Fid,
 
 		ReceivingUsername:    addressInfo.Username,
 		ReceivingUserTel:     addressInfo.Tel,

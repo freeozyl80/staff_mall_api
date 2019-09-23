@@ -63,12 +63,11 @@ func UserInfo(ctx *context.Context) {
 
 	ctx.GenResSuccess(values)
 }
-func UpdateUserInfo(ctx *context.Context) {
+
+func UpdateStaffInfo(ctx *context.Context) {
 	var UID int
-	var FID int
 
 	UID, _ = strconv.Atoi(ctx.Query("uid"))
-	FID, _ = strconv.Atoi(ctx.Query("fid"))
 	DATA := ctx.Query("data")
 
 	var updateStaffInfo StaffUpdateStruct
@@ -82,7 +81,7 @@ func UpdateUserInfo(ctx *context.Context) {
 
 	updateStaffValues := map[string]interface{}{"Coin": updateStaffInfo.Coin}
 
-	err = dao.UpdateStaffInfo(UID, FID, updateStaffValues)
+	err = dao.UpdateStaffItem(UID, updateStaffValues)
 
 	if err != nil {
 		code := e.INVALID_PARAMS

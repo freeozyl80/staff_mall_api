@@ -13,6 +13,8 @@ type Order struct {
 	OrderID     uuid.UUID
 	OrderStatus int
 
+	Fid int
+
 	ProductInfo       string
 	ProductTotalPrice int
 
@@ -36,6 +38,7 @@ func (o *Order) Generate() error {
 		o.Username,
 		o.Realname,
 		o.Tel,
+		o.Fid,
 		o.ReceivingUsername,
 		o.ReceivingUserCity,
 		o.ReceivingUserTel,

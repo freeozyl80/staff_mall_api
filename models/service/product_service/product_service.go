@@ -24,9 +24,9 @@ type ArrayProduct []Product
 
 func (plist *ArrayProduct) BuckRegister() ([]int, error) {
 	nowTime := time.Now().Unix()
-	user_list := make([]interface{}, len(*plist))
+	product_list := make([]interface{}, len(*plist))
 	for idx, val := range *plist {
-		user_list[idx] = dao.Product{
+		product_list[idx] = dao.Product{
 			ProductName:      val.ProductName,
 			ProductRealname:  val.ProductRealname,
 			CategoryID:       val.CategoryID,
@@ -42,7 +42,7 @@ func (plist *ArrayProduct) BuckRegister() ([]int, error) {
 			},
 		}
 	}
-	return dao.BuckUpsertProduct(user_list)
+	return dao.BuckUpsertProduct(product_list)
 }
 
 func (product *Product) GetInfo() error {
@@ -84,4 +84,45 @@ func (product *Product) Occupy(count int) error {
 	product.ProductPrice = _product.ProductPrice
 
 	return err
+}
+
+func (p *Product) Register() error {
+	product, err := dao.RegisterProduct(
+		p.ProductName,
+		p.ProductRealname,
+		p.CategoryID,
+		p.CategoryName,
+		p.CategoryRealname,
+		p.ProductPrice,
+		p.ProductCount,
+		p.ProductImg,
+		p.ProductStatus,
+		p.ProductDesc,
+	)
+	p.PID = product.ID
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *Product) Find() error {
+	product, err := dao.GetProductItem(
+		p.PID,
+	)
+	if err != nil {
+		return err
+	}
+	p.ProductName = product.ProductName
+	p.ProductRealname = product.ProductRealname
+	p.CategoryID = product.CategoryID
+	p.CategoryName = product.CategoryName
+	p.CategoryRealname = product.CategoryRealname
+	p.ProductPrice = product.ProductPrice
+	p.ProductCount = product.ProductCount
+	p.ProductImg = product.ProductImg
+	p.ProductStatus = product.ProductStatus
+	p.ProductDesc = product.ProductDesc
+
+	return nil
 }

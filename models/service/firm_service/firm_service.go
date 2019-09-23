@@ -52,6 +52,7 @@ func (firm *Firm) FindFirm() error {
 	firm.Firmname = f.Firmname
 	firm.FirmRealname = f.FirmRealname
 	firm.CategoryGroup = f.CategoryGroup
+	firm.Balance = f.Balance
 	firm.ProductGroup = f.ProductGroup
 	return err
 }

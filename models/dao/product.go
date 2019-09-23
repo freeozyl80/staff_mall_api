@@ -46,6 +46,7 @@ func GetProductList(pageIndex int, pageSize int, maps interface{}) ([]*Product, 
 }
 
 func GetProductItem(id int) (Product, error) {
+
 	var product Product
 
 	err := db.Where("id = ?", id).First(&product).Error
@@ -76,4 +77,44 @@ func OccupyProductItem(id int, count int) (Product, error) {
 	} else {
 		return product, errors.New("can not find")
 	}
+}
+
+func RegisterProduct(
+	productName string,
+	productRealname string,
+	categoryID int,
+	categoryName string,
+	categoryRealname string,
+	productPrice int,
+	productCount int,
+	productImg string,
+	productStatus int,
+	productDesc string,
+) (Product, error) {
+	var product = Product{
+		ProductName:      productName,
+		ProductRealname:  productRealname,
+		CategoryID:       categoryID,
+		CategoryName:     categoryName,
+		CategoryRealname: categoryRealname,
+		ProductPrice:     productPrice,
+		ProductCount:     productCount,
+		ProductImg:       productImg,
+		ProductStatus:    productStatus,
+		ProductDesc:      productDesc,
+	}
+
+	if err := db.Create(&product).Error; err != nil {
+		return product, err
+	}
+
+	return product, nil
+
+}
+func UpdateProduct(id int, data interface{}) error {
+	if err := db.Model(&Product{}).Where("id = ?", id).Updates(data).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

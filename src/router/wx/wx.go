@@ -20,7 +20,6 @@ func WxRouterInit(wrouter *gin.RouterGroup) {
 
 	wrouter.Use(context.Handle(authcheck.StaffRequire))
 	wrouter.GET("/user/info", context.Handle(staff.UserInfo))
-	wrouter.GET("/user/update", context.Handle(staff.UpdateUserInfo))
 	wrouter.POST("/product/order", context.Handle(order.GenerateOrder))
 	wrouter.GET("/order/list", context.Handle(order.ListOrder))
 	wrouter.GET("/order/item/:id", context.Handle(order.GetOrderInfo))

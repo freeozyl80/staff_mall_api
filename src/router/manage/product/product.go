@@ -2,6 +2,7 @@ package product
 
 import (
 	"fmt"
+	"net/http"
 	"path"
 	"path/filepath"
 	"staff-mall-center/models/dao"
@@ -16,54 +17,18 @@ import (
 	"strings"
 )
 
-func ProductFirmList(ctx *context.Context) {
-	var code int
-	pageIndex, _ := strconv.Atoi(ctx.Query("page_index"))
-	pageSize, _ := strconv.Atoi(ctx.Query("page_size"))
-	fid, _ := strconv.Atoi(ctx.Query("fid"))
-
-	var firm_item = firm_service.Firm{
-		Fid: fid,
+func unique(intSlice []string) []string {
+	keys := make(map[string]bool)
+	list := []string{}
+	for _, entry := range intSlice {
+		if _, value := keys[entry]; !value {
+			keys[entry] = true
+			list = append(list, entry)
+		}
 	}
-	err := firm_item.FindFirm()
-
-	if err != nil {
-		code = e.ERROR
-		ctx.GenResError(code, err.Error())
-		return
-	}
-	fmt.Printf("%+v\n", firm_item)
-
-	seachValue := []int{}
-	for _, product_item := range strings.Split(firm_item.ProductGroup, ",") {
-		pid, _ := strconv.Atoi(product_item)
-		seachValue = append(seachValue, pid)
-	}
-
-	productlist, err := dao.GetProductList((pageIndex-1)*pageSize, pageSize, seachValue)
-
-	var productResList []map[string]interface{}
-
-	for _, product_item := range productlist {
-		item := make(map[string]interface{})
-
-		item["pid"] = product_item.ID
-		item["product_name"] = product_item.ProductName
-		item["product_realname"] = product_item.ProductRealname
-		item["category_name"] = product_item.CategoryName
-		item["category_realname"] = product_item.CategoryRealname
-		item["product_desc"] = product_item.ProductDesc
-		item["product_count"] = product_item.ProductCount
-		item["product_status"] = product_item.ProductStatus
-		item["product_price"] = product_item.ProductPrice
-		item["product_img"] = product_item.ProductImg
-
-		productResList = append(productResList, item)
-	}
-	values := map[string]interface{}{"page": pageIndex, "pageSize": pageSize, "list": productResList, "succMsg": "查询成功"}
-
-	ctx.GenResSuccess(values)
+	return list
 }
+
 func ProductList(ctx *context.Context) {
 
 	pageIndex, _ := strconv.Atoi(ctx.Query("page_index"))
@@ -99,6 +64,16 @@ func ProductList(ctx *context.Context) {
 	values := map[string]interface{}{"page": "page", "pageSize": "pageSize", "succMsg": "查询成功", "list": productResList}
 
 	ctx.GenResSuccess(values)
+}
+
+func ProductFirmList(ctx *context.Context) {
+	url := fmt.Sprintf("/wx/product/firm/list?fid=%v&page_index=%v&page_size=%v", ctx.Query("fid"), ctx.Query("page_index"), ctx.Query("page_size"))
+	ctx.Redirect(http.StatusMovedPermanently, url)
+}
+
+func CategroyList(ctx *context.Context) {
+	url := fmt.Sprintf("/wx/category/firm/list?fid=%v&page_index=%v&page_size=%v", ctx.Query("fid"), ctx.Query("page_index"), ctx.Query("page_size"))
+	ctx.Redirect(http.StatusMovedPermanently, url)
 }
 
 func ProductImport(ctx *context.Context) {
@@ -278,14 +253,130 @@ func ProductImport(ctx *context.Context) {
 
 }
 
-func unique(intSlice []string) []string {
-	keys := make(map[string]bool)
-	list := []string{}
-	for _, entry := range intSlice {
-		if _, value := keys[entry]; !value {
-			keys[entry] = true
-			list = append(list, entry)
-		}
+func ProductFirmAdd(ctx *context.Context) {
+	var code int
+	fid, _ := strconv.Atoi(ctx.PostForm("fid"))
+
+	productName := ctx.PostForm("product_name")
+	productRealname := ctx.PostForm("product_realname")
+	categoryID, _ := strconv.Atoi(ctx.PostForm("category_id"))
+	categoryName := ctx.PostForm("category_name")
+	categoryRealname := ctx.PostForm("category_realname")
+	productPrice, _ := strconv.Atoi(ctx.PostForm("product_price"))
+	productCount, _ := strconv.Atoi(ctx.PostForm("product_count"))
+	productImg := ctx.PostForm("product_img")
+	productStatus, _ := strconv.Atoi(ctx.PostForm("product_status"))
+	productDesc := ctx.PostForm("product_desc")
+
+	product_item := product_service.Product{
+		ProductName:      productName,
+		ProductRealname:  productRealname,
+		CategoryID:       categoryID,
+		CategoryName:     categoryName,
+		CategoryRealname: categoryRealname,
+		ProductPrice:     productPrice,
+		ProductCount:     productCount,
+		ProductImg:       productImg,
+		ProductStatus:    productStatus,
+		ProductDesc:      productDesc,
 	}
-	return list
+	err := product_item.Register()
+
+	firm := firm_service.Firm{
+		Fid: fid,
+	}
+	err = firm.FindFirm()
+
+	updateFirmValues := map[string]interface{}{
+		"product_group": firm.ProductGroup + strconv.Itoa(product_item.PID) + ",",
+	}
+	err = dao.UpdateFirm(fid, updateFirmValues)
+
+	if err != nil {
+		code = e.INVALID_PARAMS
+		ctx.GenResError(code, err.Error())
+		return
+	}
+
+	code = e.SUCCESS
+	values := map[string]string{"succMsg": "创建商品成功"}
+	ctx.GenResSuccess(values)
+	return
+}
+func ProductFirmUpdate(ctx *context.Context) {
+
+	var code int
+	//fid, _ := strconv.Atoi(ctx.PostForm("fid"))
+	pid, _ := strconv.Atoi(ctx.PostForm("pid"))
+
+	productName := ctx.PostForm("product_name")
+	productRealname := ctx.PostForm("product_realname")
+	categoryID, _ := strconv.Atoi(ctx.PostForm("category_id"))
+	categoryName := ctx.PostForm("category_name")
+	categoryRealname := ctx.PostForm("category_realname")
+	productPrice, _ := strconv.Atoi(ctx.PostForm("product_price"))
+	productCount, _ := strconv.Atoi(ctx.PostForm("product_count"))
+	productImg := ctx.PostForm("product_img")
+	productStatus, _ := strconv.Atoi(ctx.PostForm("product_status"))
+	productDesc := ctx.PostForm("product_desc")
+
+	updateProductValues := map[string]interface{}{
+		"product_name":      productName,
+		"product_realname":  productRealname,
+		"category_id":       categoryID,
+		"category_name":     categoryName,
+		"category_realname": categoryRealname,
+		"product_price":     productPrice,
+		"product_count":     productCount,
+		"product_img":       productImg,
+		"product_status":    productStatus,
+		"product_desc":      productDesc,
+	}
+
+	err := dao.UpdateProduct(pid, updateProductValues)
+
+	if err != nil {
+		code = e.INVALID_PARAMS
+		ctx.GenResError(code, err.Error())
+		return
+	}
+
+	code = e.SUCCESS
+	values := map[string]string{"succMsg": "创建商品成功"}
+	ctx.GenResSuccess(values)
+	return
+}
+func ProductFirmDetail(ctx *context.Context) {
+	var code int
+
+	PID, _ := strconv.Atoi(ctx.Query("pid"))
+
+	product_item := product_service.Product{
+		PID: PID,
+	}
+	err := product_item.Find()
+
+	if err != nil {
+		code = e.INVALID_PARAMS
+		ctx.GenResError(code, err.Error())
+		return
+	}
+
+	code = e.SUCCESS
+	productValues := map[string]interface{}{
+		"product_name":      product_item.ProductName,
+		"product_realname":  product_item.ProductRealname,
+		"category_id":       product_item.CategoryID,
+		"category_name":     product_item.CategoryName,
+		"category_realname": product_item.CategoryRealname,
+		"product_price":     product_item.ProductPrice,
+		"product_count":     product_item.ProductCount,
+		"product_img":       product_item.ProductImg,
+		"product_status":    product_item.ProductStatus,
+		"product_desc":      product_item.ProductDesc,
+	}
+
+	values := map[string]interface{}{"info": productValues}
+	ctx.GenResSuccess(values)
+	return
 }

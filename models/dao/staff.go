@@ -62,11 +62,22 @@ func UpdateStaffItem(uid int, data interface{}) error {
 	return nil
 }
 
-func UpdateStaffInfo(uid int, fid int, data interface{}) error {
+func UpdateStaffCoin(uid int, fid int, coin int, basecoin int, firmcoin int) error {
 
-	if err := db.Model(&Staff{}).Where(Staff{UID: uid, Fid: fid}).Updates(data).Error; err != nil {
+	tx := db.Begin()
+
+	if err := tx.Model(&Staff{}).Where(Staff{UID: uid, Fid: fid}).Update("coin", coin+basecoin).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
+
+	if err := tx.Model(&Firm{}).Where(Firm{Model: Model{
+		ID: fid,
+	}}).Update("balance", firmcoin-coin).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	tx.Commit()
 
 	return nil
 }

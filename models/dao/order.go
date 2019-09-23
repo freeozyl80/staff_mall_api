@@ -2,6 +2,7 @@ package dao
 
 import (
 	"errors"
+	"time"
 
 	"github.com/jinzhu/gorm"
 	uuid "github.com/satori/go.uuid"
@@ -11,6 +12,8 @@ type Order struct {
 	Model
 	OrderID     uuid.UUID `gorm:"not null;"`
 	OrderStatus int       `gorm:"not null;" json:"order_status" comment '1: 下定， 2.代表支付成，3.发货完成，4. 收货完成， 5. 取消，6，退换中， 7异常'`
+
+	Fid int `json:"fid"`
 
 	ProductInfo       string `gorm:"not null;" json:"product_info"`
 	ProductTotalPrice int    `gorm:"not null;" json:"product_total_price"`
@@ -40,6 +43,7 @@ func GenerateOrder(
 	username string,
 	realname string,
 	tel int,
+	fid int,
 	receiving_username string,
 	receiving_user_city string,
 	receiving_tel int,
@@ -56,6 +60,8 @@ func GenerateOrder(
 		Realname:          realname,
 		Tel:               tel,
 
+		Fid: fid,
+
 		ReceivingUsername:    receiving_username,
 		ReceivingUserTel:     receiving_tel,
 		ReceivingUserCity:    receiving_user_city,
@@ -70,7 +76,7 @@ func GenerateOrder(
 }
 func GetOrderList(pageIndex int, pageSize int, maps interface{}) ([]*Order, error) {
 	var orderList []*Order
-	err := db.Where(maps).Offset(pageIndex).Limit(pageSize).Find(&orderList).Error
+	err := db.Where(maps).Where("created_on > ? OR  order_status != ?", time.Now().Unix()-30*60, 1).Offset(pageIndex).Limit(pageSize).Find(&orderList).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
@@ -96,5 +102,33 @@ func UpdateOrderItem(uid int, orderId uuid.UUID, data interface{}) error {
 		return err
 	}
 
+	return nil
+}
+func Refund(fid int, orderid uuid.UUID, coin int, uid int, basecoin int) error {
+
+	tx := db.Begin()
+
+	if err := tx.Model(&Order{}).Where(Order{OrderID: orderid, Fid: fid}).Update("order_status", 5).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Model(&Staff{}).Where(Staff{UID: uid, Fid: fid}).Update("coin", coin+basecoin).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
+
+	return nil
+}
+
+func ClearVaildOrder() error {
+
+	var order Order
+
+	if err := db.Model(&Order{}).Where("created_on < ? AND  order_status = ?", time.Now().Unix()-30*60, 1).Unscoped().Delete(&order).Error; err != nil {
+		return err
+	}
 	return nil
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"staff-mall-center/cron"
 	"staff-mall-center/models/dao"
 	"staff-mall-center/pkg/bootstrap"
 	"staff-mall-center/pkg/setting"
@@ -19,6 +20,8 @@ func init() {
 }
 
 func main() {
+
+	cron.CronRun()
 	//实例化一个命令行程序
 	app := cli.NewApp()
 	//程序名称
@@ -76,5 +79,4 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 }

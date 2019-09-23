@@ -16,6 +16,7 @@ require (
 	github.com/jinzhu/gorm v1.9.10
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826
 	github.com/pborman/uuid v1.2.0 // indirect
+	github.com/robfig/cron v1.2.0
 	github.com/satori/go.uuid v1.2.0
 	golang.org/x/image v0.0.0-20190703141733-d6a02ce849c9 // indirect
 	gopkg.in/urfave/cli.v1 v1.20.0
