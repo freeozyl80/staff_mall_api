@@ -19,6 +19,11 @@ type Product struct {
 	ProductCount  int
 	ProductPrice  int
 	ProductStatus int
+
+	SupplierId       int
+	SupplierName     string
+	SupplierRealname string
+	SupplierTel      int
 }
 type ArrayProduct []Product
 
@@ -37,6 +42,12 @@ func (plist *ArrayProduct) BuckRegister() ([]int, error) {
 			ProductImg:       val.ProductImg,
 			ProductDesc:      val.ProductDesc,
 			ProductStatus:    val.ProductStatus,
+
+			SupplierId:       val.SupplierId,
+			SupplierName:     val.SupplierName,
+			SupplierRealname: val.SupplierRealname,
+			SupplierTel:      val.SupplierTel,
+
 			Model: dao.Model{
 				CreatedOn: nowTime,
 			},
@@ -64,6 +75,11 @@ func (product *Product) GetInfo() error {
 	product.CategoryID = _product.CategoryID
 	product.CategoryName = _product.CategoryName
 	product.CategoryName = _product.CategoryName
+
+	product.SupplierId = _product.SupplierId
+	product.SupplierName = _product.SupplierName
+	product.SupplierRealname = _product.SupplierRealname
+	product.SupplierTel = _product.SupplierTel
 
 	return err
 }
@@ -98,6 +114,10 @@ func (p *Product) Register() error {
 		p.ProductImg,
 		p.ProductStatus,
 		p.ProductDesc,
+		p.SupplierId,
+		p.SupplierName,
+		p.SupplierRealname,
+		p.SupplierTel,
 	)
 	p.PID = product.ID
 	if err != nil {
@@ -123,6 +143,11 @@ func (p *Product) Find() error {
 	p.ProductImg = product.ProductImg
 	p.ProductStatus = product.ProductStatus
 	p.ProductDesc = product.ProductDesc
+
+	p.SupplierId = product.SupplierId
+	p.SupplierName = product.SupplierName
+	p.SupplierRealname = product.SupplierRealname
+	p.SupplierTel = product.SupplierTel
 
 	return nil
 }

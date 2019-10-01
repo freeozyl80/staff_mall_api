@@ -1,7 +1,6 @@
 package category_service
 
 import (
-	"fmt"
 	"staff-mall-center/models/dao"
 	"time"
 )
@@ -17,9 +16,9 @@ type ArrayCategory []Category
 
 func (clist *ArrayCategory) BuckRegister() ([]int, error) {
 	nowTime := time.Now().Unix()
-	user_list := make([]interface{}, len(*clist))
+	category_list := make([]interface{}, len(*clist))
 	for idx, val := range *clist {
-		user_list[idx] = dao.Category{
+		category_list[idx] = dao.Category{
 			CategoryName:     val.CategoryName,
 			CategoryRealname: val.CategoryRealname,
 			CategoryDesc:     val.CategoryDesc,
@@ -29,11 +28,10 @@ func (clist *ArrayCategory) BuckRegister() ([]int, error) {
 			},
 		}
 	}
-	return dao.BuckUpsertCategory(user_list)
+	return dao.BuckUpsertCategory(category_list)
 }
 
 func (c *Category) FindCategory() error {
-	fmt.Println(c.CategoryName)
 	category, err := dao.FindCategoryId(c.CategoryName)
 
 	if err != nil {

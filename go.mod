@@ -9,6 +9,7 @@ require (
 	github.com/fvbock/endless v0.0.0-20170109170031-447134032cb6
 	github.com/gin-contrib/cors v1.3.0
 	github.com/gin-contrib/sse v0.1.0 // indirect
+	github.com/gin-contrib/static v0.0.0-20190913125243-df30d4057ba1
 	github.com/gin-gonic/gin v1.4.0
 	github.com/go-ini/ini v0.0.0-20190327024845-3be5ad479f69
 	github.com/go-sql-driver/mysql v1.4.1

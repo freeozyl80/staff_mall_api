@@ -18,6 +18,11 @@ type Product struct {
 	ProductPrice     int    `gorm:"not null; default:1" json:"product_price"`
 	ProductDesc      string `gorm:"not null; default:1" json:"product_desc"`
 	ProductImg       string `gorm:"not null; default:'https://img.zcool.cn/community/01fd5958be2833a801219c77b15a63.jpg@2o.jpg'" json:"product_img"`
+
+	SupplierId       int    `gorm:"not null; default:1" json:"supplier_id"`
+	SupplierName     string `gorm:"not null;unique" json:"supplier_name"`
+	SupplierRealname string `gorm:"not null" json:"supplier_realname"`
+	SupplierTel      int    `json:"supplier_tel"`
 }
 
 func BuckUpsertProduct(objArr []interface{}) ([]int, error) {
@@ -31,7 +36,11 @@ func BuckUpsertProduct(objArr []interface{}) ([]int, error) {
 			"product_price = values(product_price),"+
 			"product_img = values(product_img),"+
 			"product_status = values(product_status),"+
-			"product_desc = values(product_desc)")
+			"product_desc = values(product_desc),"+
+			"supplier_id = values(supplier_id),"+
+			"supplier_name = values(supplier_name),"+
+			"supplier_realname = values(supplier_realname),"+
+			"supplier_tel = values(supplier_tel)")
 	return ids, err
 }
 
@@ -90,6 +99,11 @@ func RegisterProduct(
 	productImg string,
 	productStatus int,
 	productDesc string,
+
+	supplier_id int,
+	supplier_name string,
+	supplier_realname string,
+	supplier_tel int,
 ) (Product, error) {
 	var product = Product{
 		ProductName:      productName,
@@ -102,6 +116,11 @@ func RegisterProduct(
 		ProductImg:       productImg,
 		ProductStatus:    productStatus,
 		ProductDesc:      productDesc,
+
+		SupplierId:       supplier_id,
+		SupplierName:     supplier_name,
+		SupplierRealname: supplier_realname,
+		SupplierTel:      supplier_tel,
 	}
 
 	if err := db.Create(&product).Error; err != nil {

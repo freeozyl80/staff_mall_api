@@ -41,6 +41,7 @@ func MangeRouterInit(mgrouter *gin.RouterGroup) {
 	mgrouter.POST("/product/import", context.Handle(product.ProductImport))
 	mgrouter.GET("/product/list", context.Handle(product.ProductList))
 	mgrouter.GET("/product/firm/categroy/list", context.Handle(product.CategroyList))
+	mgrouter.GET("/supplier/list", context.Handle(product.SupplierList))
 	mgrouter.GET("/product/firm/list", context.Handle(product.ProductFirmList))
 	mgrouter.POST("/product/firm/new", context.Handle(product.ProductFirmAdd))
 	mgrouter.POST("/product/firm/update", context.Handle(product.ProductFirmUpdate))

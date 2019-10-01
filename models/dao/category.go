@@ -16,6 +16,9 @@ type Category struct {
 }
 
 func BuckUpsertCategory(objArr []interface{}) ([]int, error) {
+
+	fmt.Printf("%+v\n", objArr)
+	fmt.Println("--------------------------")
 	ids, err := BulkInsertOnDuplicateUpdate(db, objArr,
 		"category_name = values(category_name),"+
 			"category_realname = values(category_realname),"+

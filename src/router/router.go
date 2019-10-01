@@ -3,15 +3,16 @@ package router
 import (
 	"fmt"
 	"log"
+	"net/http"
+	"path/filepath"
 	"staff-mall-center/pkg/setting"
 	"staff-mall-center/src/router/benchmark"
 	"staff-mall-center/src/router/manage"
 	"staff-mall-center/src/router/wx"
 	"syscall"
-	"time"
 
 	"github.com/fvbock/endless"
-	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,17 +28,17 @@ func Start() {
 	router.Use(gin.Recovery())
 
 	// cors
-	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://127.0.0.1:8001"},
-		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
-		AllowHeaders:     []string{"Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, hualvmall_authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		AllowOriginFunc: func(origin string) bool {
-			return origin == "http://127.0.0.1:8001"
-		},
-		MaxAge: 12 * time.Hour,
-	}))
+	// router.Use(cors.New(cors.Config{
+	// 	AllowOrigins:     []string{"http://127.0.0.1:8001"},
+	// 	AllowMethods:     []string{"GET", "POST", "OPTIONS"},
+	// 	AllowHeaders:     []string{"Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, hualvmall_authorization"},
+	// 	ExposeHeaders:    []string{"Content-Length"},
+	// 	AllowCredentials: true,
+	// 	AllowOriginFunc: func(origin string) bool {
+	// 		return origin == "http://127.0.0.1:8001"
+	// 	},
+	// 	MaxAge: 12 * time.Hour,
+	// }))
 
 	// 心跳benchmark检测
 	router.GET("/benchmark", benchmark.MyBenchLogger, func(c *gin.Context) {
@@ -47,6 +48,14 @@ func Start() {
 
 	})
 	// 	暂定router 分为三种类型 分别是 common || wx相关 || mis相关，具体后面再细分吧
+	path, _ := filepath.Abs("./www/index.html")
+	router.LoadHTMLFiles(path)
+
+	router.Use(static.Serve("/web", static.LocalFile("./www", false)))
+
+	router.GET("/web/*action", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{})
+	})
 
 	wxRouter := router.Group("/wx")
 	wx.WxRouterInit(wxRouter)

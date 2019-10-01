@@ -51,6 +51,8 @@ github.com/gin-contrib/cors v1.3.0/go.mod h1:artPvLlhkF7oG06nK8v3U8TNz6IeX+w1uzC
 github.com/gin-contrib/sse v0.0.0-20190301062529-5545eab6dad3/go.mod h1:VJ0WA2NBN22VlZ2dKZQPAPnyWw5XTlK1KymzLKsr59s=
 github.com/gin-contrib/sse v0.1.0 h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE=
 github.com/gin-contrib/sse v0.1.0/go.mod h1:RHrZQHXnP2xjPF+u1gW/2HnVO7nvIa9PG3Gm+fLHvGI=
+github.com/gin-contrib/static v0.0.0-20190913125243-df30d4057ba1 h1:20tgJcQcFETYnOMtRN+9u+WjHTiQzWJI6UDh2aGXW2s=
+github.com/gin-contrib/static v0.0.0-20190913125243-df30d4057ba1/go.mod h1:3pvUTQOgFP8/8nZgiWidsZ7piF6wCF0OVZlb5IyTD1Y=
 github.com/gin-gonic/gin v0.0.0-20190618114910-09a3650c97ca h1:PH2Ooa5V9PjuQWf2irYaf7FDvMAPxEprhXPqZw3WXeg=
 github.com/gin-gonic/gin v0.0.0-20190618114910-09a3650c97ca/go.mod h1:9IU0WtCH/73U9hzh3F06jnm+pfneQmQknmxaPn8lb/Q=
 github.com/gin-gonic/gin v1.4.0 h1:3tMoCCfM7ppqsR0ptz/wi1impNpT7/9wQtMZ8lr1mCQ=

@@ -9,6 +9,7 @@ import (
 	"staff-mall-center/models/service/category_service"
 	"staff-mall-center/models/service/firm_service"
 	"staff-mall-center/models/service/product_service"
+	"staff-mall-center/models/service/supplier_service"
 	"staff-mall-center/pkg/context"
 	"staff-mall-center/pkg/e"
 	"staff-mall-center/pkg/setting"
@@ -57,7 +58,9 @@ func ProductList(ctx *context.Context) {
 		item["product_status"] = product_item.ProductStatus
 		item["product_price"] = product_item.ProductPrice
 		item["product_img"] = product_item.ProductImg
-
+		item["supplier_id"] = product_item.SupplierId
+		item["supplier_realname"] = product_item.SupplierRealname
+		item["supplier_name"] = product_item.SupplierName
 		productResList = append(productResList, item)
 	}
 
@@ -75,7 +78,33 @@ func CategroyList(ctx *context.Context) {
 	url := fmt.Sprintf("/wx/category/firm/list?fid=%v&page_index=%v&page_size=%v", ctx.Query("fid"), ctx.Query("page_index"), ctx.Query("page_size"))
 	ctx.Redirect(http.StatusMovedPermanently, url)
 }
+func SupplierList(ctx *context.Context) {
+	var code int
+	pageIndex, _ := strconv.Atoi(ctx.Query("page_index"))
+	pageSize, _ := strconv.Atoi(ctx.Query("page_size"))
 
+	supplierList, err := dao.GetSupplierList((pageIndex-1)*pageSize, pageSize, "")
+
+	if err != nil {
+		code = e.ERROR
+		ctx.GenResError(code, err.Error())
+		return
+	}
+	var supplierResList []map[string]interface{}
+
+	for _, categrouy_item := range supplierList {
+		item := make(map[string]interface{})
+
+		item["supplier_id"] = categrouy_item.ID
+		item["supplier_name"] = categrouy_item.SupplierName
+		item["supplier_realname"] = categrouy_item.SupplierRealname
+
+		supplierResList = append(supplierResList, item)
+	}
+	values := map[string]interface{}{"page": pageIndex, "pageSize": pageSize, "list": supplierResList, "succMsg": "查询成功"}
+
+	ctx.GenResSuccess(values)
+}
 func ProductImport(ctx *context.Context) {
 	var code int
 	var categoryGroup string
@@ -109,9 +138,33 @@ func ProductImport(ctx *context.Context) {
 
 		if _err == nil {
 
+			var supplierList = supplier_service.ArraySupplier{}
 			var categoryList = category_service.ArrayCategory{}
 			var productList = product_service.ArrayProduct{}
-			//  品类导入
+
+			// 供应商导入
+			for num, row := range arr {
+				if num != 0 {
+					if err != nil {
+						break
+					}
+					supplier_item := supplier_service.Supplier{
+						SupplierName:     row[8],
+						SupplierRealname: row[9],
+						SupplierTel:      0,
+					}
+					supplierList = append(supplierList, supplier_item)
+				}
+			}
+			_, error := supplierList.BuckRegister()
+
+			if error != nil {
+				code = e.INVALID_PARAMS
+				ctx.GenResError(code, error.Error())
+				return
+			}
+
+			// 品类导入
 			for num, row := range arr {
 				if num != 0 {
 					if err != nil {
@@ -126,7 +179,7 @@ func ProductImport(ctx *context.Context) {
 					categoryList = append(categoryList, category_item)
 				}
 			}
-			_, error := categoryList.BuckRegister()
+			_, error = categoryList.BuckRegister()
 
 			if error != nil {
 				code = e.INVALID_PARAMS
@@ -142,6 +195,11 @@ func ProductImport(ctx *context.Context) {
 						CategoryName: row[2],
 					}
 					err = product_category_item.FindCategory()
+
+					product_supplier_item := supplier_service.Supplier{
+						SupplierName: row[8],
+					}
+					err = product_supplier_item.FindSupplier()
 
 					if err != nil {
 						code = e.INVALID_PARAMS
@@ -163,6 +221,11 @@ func ProductImport(ctx *context.Context) {
 						ProductImg:       row[7],
 						ProductStatus:    1,
 						CategoryID:       product_category_item.CID,
+
+						SupplierId:       product_supplier_item.SupplierId,
+						SupplierName:     row[8],
+						SupplierRealname: row[9],
+						SupplierTel:      0,
 					}
 
 					productList = append(productList, product_item)
@@ -314,6 +377,11 @@ func ProductFirmUpdate(ctx *context.Context) {
 	categoryID, _ := strconv.Atoi(ctx.PostForm("category_id"))
 	categoryName := ctx.PostForm("category_name")
 	categoryRealname := ctx.PostForm("category_realname")
+
+	supplierId, _ := strconv.Atoi(ctx.PostForm("supplier_id"))
+	supplierName := ctx.PostForm("supplier_name")
+	supplierRealname := ctx.PostForm("supplier_realname")
+
 	productPrice, _ := strconv.Atoi(ctx.PostForm("product_price"))
 	productCount, _ := strconv.Atoi(ctx.PostForm("product_count"))
 	productImg := ctx.PostForm("product_img")
@@ -326,6 +394,9 @@ func ProductFirmUpdate(ctx *context.Context) {
 		"category_id":       categoryID,
 		"category_name":     categoryName,
 		"category_realname": categoryRealname,
+		"supplier_id":       supplierId,
+		"supplier_name":     supplierName,
+		"supplier_realname": supplierRealname,
 		"product_price":     productPrice,
 		"product_count":     productCount,
 		"product_img":       productImg,
@@ -369,6 +440,9 @@ func ProductFirmDetail(ctx *context.Context) {
 		"category_id":       product_item.CategoryID,
 		"category_name":     product_item.CategoryName,
 		"category_realname": product_item.CategoryRealname,
+		"supplier_id":       product_item.SupplierId,
+		"supplier_name":     product_item.SupplierName,
+		"supplier_realname": product_item.SupplierRealname,
 		"product_price":     product_item.ProductPrice,
 		"product_count":     product_item.ProductCount,
 		"product_img":       product_item.ProductImg,

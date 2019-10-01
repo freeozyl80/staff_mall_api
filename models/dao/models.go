@@ -72,6 +72,10 @@ func Setup() {
 		log.Println("订单表创建ing")
 		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&Order{})
 	}
+	if !db.HasTable(&Supplier{}) {
+		log.Println("供应商表创建ing")
+		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&Supplier{})
+	}
 }
 func IsEstablish() bool {
 	if !db.HasTable(&User{}) {
@@ -93,6 +97,9 @@ func IsEstablish() bool {
 		return false
 	}
 	if !db.HasTable(&Order{}) {
+		return false
+	}
+	if !db.HasTable(&Supplier{}) {
 		return false
 	}
 	return true
