@@ -12,7 +12,7 @@ type Category struct {
 	CategoryName     string `gorm:"not null;unique" json:"category_name"`
 	CategoryRealname string `json:"category_realname"`
 	CategoryStatus   int    `gorm:"not null; default:1" json:"category_status"`
-	CategoryDesc     string `gorm:"not null; default:'默认类别'" json:"category_desc"`
+	CategoryDesc     string `gorm:"not null; default:'default'" json:"category_desc"`
 }
 
 func BuckUpsertCategory(objArr []interface{}) ([]int, error) {

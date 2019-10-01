@@ -10,8 +10,10 @@ import (
 	"staff-mall-center/src/router/manage"
 	"staff-mall-center/src/router/wx"
 	"syscall"
+	"time"
 
 	"github.com/fvbock/endless"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 )
@@ -28,17 +30,17 @@ func Start() {
 	router.Use(gin.Recovery())
 
 	// cors
-	// router.Use(cors.New(cors.Config{
-	// 	AllowOrigins:     []string{"http://127.0.0.1:8001"},
-	// 	AllowMethods:     []string{"GET", "POST", "OPTIONS"},
-	// 	AllowHeaders:     []string{"Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, hualvmall_authorization"},
-	// 	ExposeHeaders:    []string{"Content-Length"},
-	// 	AllowCredentials: true,
-	// 	AllowOriginFunc: func(origin string) bool {
-	// 		return origin == "http://127.0.0.1:8001"
-	// 	},
-	// 	MaxAge: 12 * time.Hour,
-	// }))
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://hualvmall.com"},
+		AllowMethods:     []string{"GET", "POST", "OPTIONS"},
+		AllowHeaders:     []string{"Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, hualvmall_authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		AllowOriginFunc: func(origin string) bool {
+			return origin == "http://hualvmall.com"
+		},
+		MaxAge: 12 * time.Hour,
+	}))
 
 	// 心跳benchmark检测
 	router.GET("/benchmark", benchmark.MyBenchLogger, func(c *gin.Context) {
