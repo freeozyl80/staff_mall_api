@@ -111,7 +111,7 @@ func AdminLogin(ctx *context.Context) {
 			ctx.GenResError(code, "")
 			return
 		} else {
-			ctx.SetCookie("hualvmall_authorization", token, 30*24*60*60, "/", ".", false, false)
+			ctx.SetCookie("hualvmall_authorization", token, 30*24*60*60, "/", "hualvmall.com", false, false)
 		}
 
 		ctx.GenResSuccess(values)
@@ -146,7 +146,7 @@ func UserLogin(ctx *context.Context) {
 			ctx.GenResError(code, "")
 			return
 		} else {
-			ctx.SetCookie("hualvmall_staff_authorization", token, expired, "/", "", false, false)
+			ctx.SetCookie("hualvmall_staff_authorization", token, expired, "/", "hualvmall.com", false, false)
 		}
 		expiredStr := strconv.Itoa(expired)
 
