@@ -15,7 +15,11 @@ func AuthRequired(ctx *context.Context) {
 
 	code = e.SUCCESS
 
-	headers := ctx.Request.Header["hualvmall_authorization"]
+	headers := ctx.Request.Header["Hualvmall_authorization"]
+
+	fmt.Println("查看headers")
+	fmt.Printf("%+v]\n", ctx.Request.Header)
+	fmt.Printf("%+v]\n", ctx.Request.Header["hualvmall_authorization"])
 
 	if len(headers) > 0 {
 		token = headers[0]
@@ -55,8 +59,8 @@ func StaffRequire(ctx *context.Context) {
 
 	code = e.SUCCESS
 
-	headers := ctx.Request.Header["hualvmall_staff_authorization"]
-	headersRedict := ctx.Request.Header["hualvmall_authorization"]
+	headers := ctx.Request.Header["Hualvmall_staff_authorization"]
+	headersRedict := ctx.Request.Header["Hualvmall_authorization"]
 
 	if len(headers) > 0 {
 		token = headers[0]
