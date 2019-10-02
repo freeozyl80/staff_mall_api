@@ -353,6 +353,50 @@ func AddUser(ctx *context.Context) {
 
 }
 
+func UserModify(ctx *context.Context) {
+
+	var code int
+	uid, _ := ctx.Get("uid")
+	UID, _ := strconv.Atoi(uid.(string))
+
+	pwdOld := ctx.PostForm("pwd_old")
+	pwdNew := ctx.PostForm("pwd_new")
+
+	user_service := account_service.User{UID: UID, Password: pwdOld}
+
+	isRight, err := user_service.CheckPwd()
+	if err != nil {
+		code = e.ERROR
+		ctx.GenResError(code, "密码不正确")
+		return
+	}
+	if !isRight {
+		code = e.INVALID_PARAMS
+		ctx.GenResError(code, "密码不正确")
+		return
+	}
+
+	if pwdNew == "" {
+		code = e.ERROR
+		ctx.GenResError(code, "新密码不能为空")
+		return
+	}
+	// 加密
+	u.CryptoHandler(&pwdNew)
+	updateAccountValues := map[string]interface{}{"password": pwdNew, "salt1": setting.CryptoSetting.Seed1, "salt2": setting.CryptoSetting.Seed2}
+
+	err = dao.UpdateUser(UID, updateAccountValues)
+
+	if err != nil {
+		code = e.ERROR
+		ctx.GenResError(code, err.Error())
+		return
+	}
+	values := map[string]string{"succMsg": "账号密码修改成功"}
+	ctx.GenResSuccess(values)
+
+}
+
 func DelegateManager(ctx *context.Context) {
 	var code int
 

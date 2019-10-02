@@ -56,6 +56,26 @@ func CheckUser(username, password string, usertype int) (int, error) {
 	return 0, errors.New("can't find res")
 }
 
+func CheckUid(uid int, password string) (int, error) {
+	u.CryptoHandler(&password)
+
+	var user User
+	err := db.Select("id").Where(User{Model: Model{
+		ID: uid,
+	}, Password: password}).First(&user).Error
+
+	// 存在
+	if user.ID > 0 {
+		return user.ID, nil
+	}
+	// 有报错，且报错不是是没有找到
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return 0, err
+	}
+
+	return 0, errors.New("can't find res")
+}
+
 func RegisterUser(username, password string, usertype int, realname string) error {
 
 	u.CryptoHandler(&password)

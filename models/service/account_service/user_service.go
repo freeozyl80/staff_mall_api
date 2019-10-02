@@ -51,7 +51,22 @@ func (u *User) Check() (bool, error) {
 	u.UID = uid
 	return true, nil
 }
+func (u *User) CheckPwd() (bool, error) {
+	uid, err := dao.CheckUid(u.UID, u.Password)
 
+	if uid == 0 || err != nil {
+		fmt.Println("登录失败")
+		return false, nil
+	}
+
+	if err != nil {
+		fmt.Println("internal Error")
+		return true, err
+	}
+
+	u.UID = uid
+	return true, nil
+}
 func (ulist *ArrayUser) BuckRegister() ([]int, error) {
 	nowTime := time.Now().Unix()
 	user_list := make([]interface{}, len(*ulist))
