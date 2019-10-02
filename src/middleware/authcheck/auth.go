@@ -17,6 +17,8 @@ func AuthRequired(ctx *context.Context) {
 
 	headers := ctx.Request.Header["Hualvmall_authorization"]
 
+	fmt.Printf("%+v]\n", headers)
+
 	if len(headers) > 0 {
 		token = headers[0]
 	}
