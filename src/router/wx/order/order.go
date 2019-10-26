@@ -19,6 +19,8 @@ type OrderInfo struct {
 	Count int `json:"count"`
 }
 
+type OrderInfoList []OrderInfo
+
 type UnusualOrderInfo struct {
 	Id          int `json:"id"`
 	Count       int `json:"count"`
@@ -152,9 +154,51 @@ func ListOrder(ctx *context.Context) {
 	for _, order_item := range orderList {
 		item := make(map[string]interface{})
 
+		var order_product_info_list OrderInfoList
+		err := json.Unmarshal([]byte(order_item.ProductInfo), &order_product_info_list)
+
+		if err != nil {
+			code := e.INVALID_PARAMS
+			ctx.GenResError(code, "查询商品列表数据失败(解析产品详情错误)")
+			return
+		}
+		
+		var product_item []map[string]interface{}
+		for _, product := range order_product_info_list {
+
+			prod_item := product_service.Product{
+				PID: product.Id,
+			}
+			err := prod_item.Find()
+		
+			if err != nil {
+				code := e.INVALID_PARAMS
+				ctx.GenResError(code, err.Error())
+				return
+			}
+
+			pitem := make(map[string]interface{})
+			pitem["product_id"] = product.Id
+			pitem["count"] = product.Count
+			pitem["product_name"] =      prod_item.ProductName
+			pitem["product_realname"] =  prod_item.ProductRealname
+			pitem["category_id"] =       prod_item.CategoryID
+			pitem["category_name"] =     prod_item.CategoryName
+			pitem["category_realname"] = prod_item.CategoryRealname
+			pitem["supplier_name"] =     prod_item.SupplierName
+			pitem["supplier_realname"] = prod_item.SupplierRealname
+			pitem["product_price"] =     prod_item.ProductPrice
+			pitem["product_count"] =     prod_item.ProductCount
+			pitem["product_img"] =       prod_item.ProductImg
+			pitem["product_status"] =    prod_item.ProductStatus
+			pitem["product_desc"] =      prod_item.ProductDesc
+			product_item = append(product_item, pitem)
+		}
+
+
 		item["order_id"] = order_item.OrderID
 		item["order_status"] = order_item.OrderStatus
-		item["order_product_info"] = order_item.ProductInfo
+		item["order_product_info"] = product_item//order_item.ProductInfo
 		item["order_total_price"] = order_item.ProductTotalPrice
 		item["order_receiving_username"] = order_item.ReceivingUsername
 		item["order_receiving_tel"] = order_item.ReceivingUserTel
@@ -163,6 +207,7 @@ func ListOrder(ctx *context.Context) {
 
 		orderResList = append(orderResList, item)
 	}
+
 
 	values := map[string]interface{}{"page": "page", "pageSize": "pageSize", "succMsg": "查询成功", "list": orderResList}
 
