@@ -15,6 +15,7 @@ func WxRouterInit(wrouter *gin.RouterGroup) {
 
 	wrouter.GET("/product/firm/list", context.Handle(product.ProductFirmList))
 	wrouter.GET("/category/firm/list", context.Handle(product.CategoryFirmList))
+	wrouter.GET("/categroy/product/firm/list", context.Handle(product.CategroyProductList))
 
 	wrouter.POST("/user/login", context.Handle(user.UserLogin))
 
