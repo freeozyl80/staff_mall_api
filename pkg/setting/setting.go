@@ -10,6 +10,12 @@ import (
 type App struct {
 	AppVer    string
 	JwtSecret string
+
+	RuntimeRootPath string
+	LogSavePath     string
+	LogSaveName     string
+	LogFileExt      string
+	TimeFormat      string
 }
 
 type Server struct {
