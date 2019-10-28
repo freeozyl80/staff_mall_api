@@ -23,6 +23,10 @@ type auth struct {
 	Username string `valid:"Required; MaxSize(50)"`
 	Password string `valid:"Required; MaxSize(50)"`
 }
+type UserLoginInfo struct {
+	Name string `json: name`
+	Pwd  string `json: pwd`
+}
 
 func login(user_service *account_service.User) int {
 	code := e.SUCCESS
@@ -121,10 +125,17 @@ func AdminLogin(ctx *context.Context) {
 }
 
 func UserLogin(ctx *context.Context) {
-	name := ctx.PostForm("name")
-	pwd := ctx.PostForm("pwd")
 
-	user_service := account_service.User{Username: name, Password: pwd, Usertype: 3}
+	var userLoginInfo UserLoginInfo
+	err := ctx.BindJSON(&userLoginInfo)
+
+	if err != nil {
+		code := e.INVALID_PARAMS
+		ctx.GenResError(code, "update info 结构不正确")
+		return
+	}
+	fmt.Printf("%#v", userLoginInfo)
+	user_service := account_service.User{Username: userLoginInfo.Name, Password: userLoginInfo.Pwd, Usertype: 3}
 	code := login(&user_service)
 
 	if code == e.INVALID_PARAMS {
@@ -139,7 +150,7 @@ func UserLogin(ctx *context.Context) {
 
 	if code == e.SUCCESS {
 
-		token, err := util.GenerateToken(name, "3", strconv.Itoa(user_service.UID))
+		token, err := util.GenerateToken(userLoginInfo.Name, "3", strconv.Itoa(user_service.UID))
 		expired := 30 * 24 * 60 * 60
 		if err != nil {
 			code = e.ERROR_AUTH_TOKEN
@@ -150,7 +161,7 @@ func UserLogin(ctx *context.Context) {
 		}
 		expiredStr := strconv.Itoa(expired)
 
-		values := map[string]string{"account": name, "token": token, "expired": expiredStr, "succMsg": "登录成功"}
+		values := map[string]string{"account": userLoginInfo.Name, "token": token, "expired": expiredStr, "succMsg": "登录成功"}
 		ctx.GenResSuccess(values)
 		return
 	}
