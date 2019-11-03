@@ -1,12 +1,20 @@
 package dao
 
 import (
+	"encoding/json"
 	"errors"
 	"time"
 
 	"github.com/jinzhu/gorm"
 	uuid "github.com/satori/go.uuid"
 )
+
+type OrderInfo struct {
+	Id    int `json:"id"`
+	Count int `json:"count"`
+}
+
+type OrderInfoList []OrderInfo
 
 type Order struct {
 	Model
@@ -76,7 +84,7 @@ func GenerateOrder(
 }
 func GetOrderList(pageIndex int, pageSize int, maps interface{}) ([]*Order, error) {
 	var orderList []*Order
-	err := db.Where(maps).Where("created_on > ? OR  order_status != ?", time.Now().Unix()-30*60, 1).Offset(pageIndex).Limit(pageSize).Find(&orderList).Error
+	err := db.Order("created_on desc").Where(maps).Where("created_on > ? OR  order_status != ?", time.Now().Unix()-30*60, 1).Offset(pageIndex).Limit(pageSize).Find(&orderList).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
@@ -104,7 +112,7 @@ func UpdateOrderItem(uid int, orderId uuid.UUID, data interface{}) error {
 
 	return nil
 }
-func Refund(fid int, orderid uuid.UUID, coin int, uid int, basecoin int) error {
+func Refund(fid int, orderid uuid.UUID, coin int, uid int, product_info string, basecoin int) error {
 
 	tx := db.Begin()
 
@@ -116,6 +124,28 @@ func Refund(fid int, orderid uuid.UUID, coin int, uid int, basecoin int) error {
 	if err := tx.Model(&Staff{}).Where(Staff{UID: uid, Fid: fid}).Update("coin", coin+basecoin).Error; err != nil {
 		tx.Rollback()
 		return err
+	}
+	var order_product_info_list OrderInfoList
+	err := json.Unmarshal([]byte(product_info), &order_product_info_list)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	for _, product := range order_product_info_list {
+
+		prodItem, err := GetProductItem(
+			product.Id,
+		)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		updateCount := product.Count + prodItem.ProductCount
+		if err := tx.Model(&Product{}).Where(Product{Model: Model{ID: product.Id}}).Update("product_count", updateCount).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
 	}
 
 	tx.Commit()

@@ -63,7 +63,7 @@ func CancelOrder(ctx *context.Context) {
 	}
 	err = staff_item.GetInfo()
 
-	err = dao.Refund(fid, orderid, order_item.ProductTotalPrice, order_item.UID, staff_item.Coin)
+	err = dao.Refund(fid, orderid, order_item.ProductTotalPrice, order_item.UID, order_item.ProductInfo, staff_item.Coin)
 
 	if err != nil {
 		code := e.INVALID_PARAMS

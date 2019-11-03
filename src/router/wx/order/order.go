@@ -335,13 +335,18 @@ func OperateOrder(ctx *context.Context) {
 		}
 		err = staff_item.GetInfo()
 
-		err = dao.Refund(staff_item.Fid, OrderID, order_item.ProductTotalPrice, order_item.UID, staff_item.Coin)
+		err = dao.Refund(staff_item.Fid, OrderID, order_item.ProductTotalPrice, order_item.UID, order_item.ProductInfo, staff_item.Coin)
 
 		if err != nil {
 			code := e.INVALID_PARAMS
 			ctx.GenResError(code, "查询商品列表数据失败")
 			return
 		}
+
+		values := map[string]interface{}{"succMsg": msg, "order_id": order_item.OrderID}
+
+		ctx.GenResSuccess(values)
+		return 
 	}
 
 	if OrderAimStatus == 2 {
