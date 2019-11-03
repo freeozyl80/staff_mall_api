@@ -238,7 +238,57 @@ func GetOrderInfo(ctx *context.Context) {
 		return
 	}
 
-	values := map[string]interface{}{"succMsg": "订单查询成功", "info": order_item}
+	var order_product_info_list OrderInfoList
+	err = json.Unmarshal([]byte(order_item.ProductInfo), &order_product_info_list)
+
+	if err != nil {
+		code := e.INVALID_PARAMS
+		ctx.GenResError(code, "查询商品列表数据失败(解析产品详情错误)")
+		return
+	}
+
+	var product_item []map[string]interface{}
+	for _, product := range order_product_info_list {
+
+		prod_item := product_service.Product{
+			PID: product.Id,
+		}
+		err := prod_item.Find()
+
+		if err != nil {
+			code := e.INVALID_PARAMS
+			ctx.GenResError(code, err.Error())
+			return
+		}
+
+		pitem := make(map[string]interface{})
+		pitem["product_id"] = product.Id
+		pitem["count"] = product.Count
+		pitem["product_name"] = prod_item.ProductName
+		pitem["product_realname"] = prod_item.ProductRealname
+		pitem["category_id"] = prod_item.CategoryID
+		pitem["category_name"] = prod_item.CategoryName
+		pitem["category_realname"] = prod_item.CategoryRealname
+		pitem["supplier_name"] = prod_item.SupplierName
+		pitem["supplier_realname"] = prod_item.SupplierRealname
+		pitem["product_price"] = prod_item.ProductPrice
+		pitem["product_count"] = prod_item.ProductCount
+		pitem["product_img"] = prod_item.ProductImg
+		pitem["product_status"] = prod_item.ProductStatus
+		pitem["product_desc"] = prod_item.ProductDesc
+		product_item = append(product_item, pitem)
+	}
+	oitem := make(map[string]interface{})
+	oitem["order_id"] = order_item.OrderID
+	oitem["order_status"] = order_item.OrderStatus
+	oitem["order_product_info"] = product_item //order_item.ProductInfo
+	oitem["order_total_price"] = order_item.ProductTotalPrice
+	oitem["order_receiving_username"] = order_item.ReceivingUsername
+	oitem["order_receiving_tel"] = order_item.ReceivingUserTel
+	oitem["order_receiving_city"] = order_item.ReceivingUserCity
+	oitem["order_receiving_address"] = order_item.ReceivingUserAddress
+
+	values := map[string]interface{}{"succMsg": "订单查询成功", "info": oitem}
 
 	ctx.GenResSuccess(values)
 }
