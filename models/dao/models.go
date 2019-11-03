@@ -46,35 +46,35 @@ func Setup() {
 
 	if !db.HasTable(&User{}) {
 		log.Println("用户表创建ing")
-		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&User{})
+		db.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8").CreateTable(&User{})
 	}
 	if !db.HasTable(&Auth{}) {
 		log.Println("权限表创建ing")
-		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&Auth{})
+		db.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8").CreateTable(&Auth{})
 	}
 	if !db.HasTable(&Firm{}) {
 		log.Println("公司表创建ing")
-		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&Firm{})
+		db.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8").CreateTable(&Firm{})
 	}
 	if !db.HasTable(&Product{}) {
 		log.Println("商品表创建ing")
-		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&Product{})
+		db.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8").CreateTable(&Product{})
 	}
 	if !db.HasTable(&Category{}) {
 		log.Println("品类表创建ing")
-		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&Category{})
+		db.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8").CreateTable(&Category{})
 	}
 	if !db.HasTable(&Staff{}) {
 		log.Println("员工表创建ing")
-		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&Staff{})
+		db.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8").CreateTable(&Staff{})
 	}
 	if !db.HasTable(&Order{}) {
 		log.Println("订单表创建ing")
-		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&Order{})
+		db.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8").CreateTable(&Order{})
 	}
 	if !db.HasTable(&Supplier{}) {
 		log.Println("供应商表创建ing")
-		db.Set("gorm:table_options", "ENGINE=InnoDB").CreateTable(&Supplier{})
+		db.Set("gorm:table_options", "ENGINE=InnoDB CHARSET=utf8").CreateTable(&Supplier{})
 	}
 }
 func IsEstablish() bool {
