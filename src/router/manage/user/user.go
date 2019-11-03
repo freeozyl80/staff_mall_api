@@ -27,6 +27,10 @@ type UserLoginInfo struct {
 	Name string `json: name`
 	Pwd  string `json: pwd`
 }
+type UserModifiedInfo struct {
+	Oldpwd string `json: oldpwd`
+	Newpwd string `json: newpwd`
+}
 
 func login(user_service *account_service.User) int {
 	code := e.SUCCESS
@@ -131,7 +135,7 @@ func UserLogin(ctx *context.Context) {
 
 	if err != nil {
 		code := e.INVALID_PARAMS
-		ctx.GenResError(code, "update info 结构不正确")
+		ctx.GenResError(code, "login info 结构不正确")
 		return
 	}
 	fmt.Printf("%#v", userLoginInfo)
@@ -370,10 +374,15 @@ func UserModify(ctx *context.Context) {
 	uid, _ := ctx.Get("uid")
 	UID, _ := strconv.Atoi(uid.(string))
 
-	pwdOld := ctx.PostForm("pwd_old")
-	pwdNew := ctx.PostForm("pwd_new")
+	var userModifiedInfo UserModifiedInfo
+	err := ctx.BindJSON(&userModifiedInfo)
 
-	user_service := account_service.User{UID: UID, Password: pwdOld}
+	if err != nil {
+		code := e.INVALID_PARAMS
+		ctx.GenResError(code, "请求包体结构不正确")
+		return
+	}
+	user_service := account_service.User{UID: UID, Password: userModifiedInfo.Oldpwd}
 
 	isRight, err := user_service.CheckPwd()
 	if err != nil {
@@ -387,14 +396,14 @@ func UserModify(ctx *context.Context) {
 		return
 	}
 
-	if pwdNew == "" {
+	if userModifiedInfo.Newpwd == "" {
 		code = e.ERROR
 		ctx.GenResError(code, "新密码不能为空")
 		return
 	}
 	// 加密
-	u.CryptoHandler(&pwdNew)
-	updateAccountValues := map[string]interface{}{"password": pwdNew, "salt1": setting.CryptoSetting.Seed1, "salt2": setting.CryptoSetting.Seed2}
+	u.CryptoHandler(&userModifiedInfo.Newpwd)
+	updateAccountValues := map[string]interface{}{"password": userModifiedInfo.Newpwd, "salt1": setting.CryptoSetting.Seed1, "salt2": setting.CryptoSetting.Seed2}
 
 	err = dao.UpdateUser(UID, updateAccountValues)
 
