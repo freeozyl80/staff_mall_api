@@ -23,6 +23,7 @@ var jsonstruct struct {
 func Setup() {
 	err1 := importSuperManager()
 	if err1 != nil {
+		fmt.Println(err1)
 		log.Println("导入 超管 账号失败")
 	}
 }
