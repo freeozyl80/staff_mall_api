@@ -329,6 +329,19 @@ func OperateOrder(ctx *context.Context) {
 			ctx.GenResError(code, "该订单无法取消")
 			return
 		}
+
+		var staff_item = staff_service.Staff{
+			UID: order_item.UID,
+		}
+		err = staff_item.GetInfo()
+
+		err = dao.Refund(staff_item.Fid, OrderID, order_item.ProductTotalPrice, order_item.UID, staff_item.Coin)
+
+		if err != nil {
+			code := e.INVALID_PARAMS
+			ctx.GenResError(code, "查询商品列表数据失败")
+			return
+		}
 	}
 
 	if OrderAimStatus == 2 {
