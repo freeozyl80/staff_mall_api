@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"runtime"
 
-	"github.com/EDDYCJY/go-gin-example/pkg/file"
+	"staff-mall-center/pkg/file"
 )
 
 type Level int
