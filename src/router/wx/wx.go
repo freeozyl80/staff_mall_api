@@ -27,5 +27,5 @@ func WxRouterInit(wrouter *gin.RouterGroup) {
 	wrouter.POST("/product/order", context.Handle(order.GenerateOrder))
 	wrouter.GET("/order/list", context.Handle(order.ListOrder))
 	wrouter.GET("/order/item/:id", context.Handle(order.GetOrderInfo))
-	wrouter.POST("/order/item/:id/operate", context.Handle(order.OperateOrder))
+	wrouter.POST("/order/item/:id/operate/:status", context.Handle(order.OperateOrder))
 }

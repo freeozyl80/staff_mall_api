@@ -301,7 +301,7 @@ func OperateOrder(ctx *context.Context) {
 	orderID := ctx.Param("id")
 	OrderID, err := uuid.FromString(orderID)
 
-	orderAimStatus := ctx.Query("order_status")
+	orderAimStatus := ctx.Param("status")
 	OrderAimStatus, _ := strconv.Atoi(orderAimStatus)
 
 	var msg string
