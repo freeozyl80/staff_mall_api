@@ -26,6 +26,8 @@ type Order struct {
 	ReceivingUserTel     string
 	ReceivingUserAddress string
 	ReceivingUserCity    string
+
+	CreatedTime int64
 }
 
 func (o *Order) Generate() error {
@@ -73,5 +75,6 @@ func (o *Order) GetOrderInfo() error {
 	o.ReceivingUserAddress = _order.ReceivingUserAddress
 	o.ReceivingUserCity = _order.ReceivingUserCity
 
+	o.CreatedTime = _order.Model.CreatedOn
 	return err
 }

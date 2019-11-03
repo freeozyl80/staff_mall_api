@@ -203,6 +203,7 @@ func ListOrder(ctx *context.Context) {
 		item["order_receiving_tel"] = order_item.ReceivingUserTel
 		item["order_receiving_city"] = order_item.ReceivingUserCity
 		item["order_receiving_address"] = order_item.ReceivingUserAddress
+		item["order_created_time"] = order_item.CreatedOn
 
 		orderResList = append(orderResList, item)
 	}
@@ -287,6 +288,7 @@ func GetOrderInfo(ctx *context.Context) {
 	oitem["order_receiving_tel"] = order_item.ReceivingUserTel
 	oitem["order_receiving_city"] = order_item.ReceivingUserCity
 	oitem["order_receiving_address"] = order_item.ReceivingUserAddress
+	oitem["order_created_time"] = order_item.CreatedTime
 
 	values := map[string]interface{}{"succMsg": "订单查询成功", "info": oitem}
 
