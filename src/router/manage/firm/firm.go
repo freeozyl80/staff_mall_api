@@ -112,3 +112,78 @@ func FirmAdd(ctx *context.Context) {
 		return
 	}
 }
+func FirmDetail(ctx *context.Context) {
+
+	Fid, _ := strconv.Atoi(ctx.Query("fid"))
+
+	var firm_item = firm_service.Firm{
+		Fid: Fid,
+	}
+	err := firm_item.FindFirm()
+
+	if err != nil {
+		code := e.INVALID_PARAMS
+		ctx.GenResError(code, "查询公司数据失败")
+		return
+	}
+	firmResInfo := make(map[string]interface{})
+
+	firmResInfo["firm_name"] = firm_item.Firmname
+	firmResInfo["firm_realname"] = firm_item.FirmRealname
+	firmResInfo["balance"] = firm_item.Balance
+
+	values := map[string]interface{}{"succMsg": "查询成功", "info": firmResInfo}
+
+	ctx.GenResSuccess(values)
+}
+func FirmUpdate(ctx *context.Context) {
+
+	Fid, _ := strconv.Atoi(ctx.Query("fid"))
+
+	var firm_item = firm_service.Firm{
+		Fid: Fid,
+	}
+	err := firm_item.FindFirm()
+
+	if err != nil {
+		code := e.INVALID_PARAMS
+		ctx.GenResError(code, "查询公司数据失败")
+		return
+	}
+
+	var code int
+
+	utype, _ := ctx.Get("utype")
+	uutype, _ := strconv.Atoi(utype.(string))
+
+	if uutype != 1 {
+		code = e.ERROR_AUTH_CHECK_TOKEN_FAIL
+		ctx.GenResError(code, "")
+		return
+	}
+
+	firmname := ctx.PostForm("firmname")
+	firm_realname := ctx.PostForm("firm_realname")
+	balance := ctx.PostForm("balance")
+
+	balanceInt, err := strconv.Atoi(balance)
+
+	if err != nil {
+		code := e.INVALID_PARAMS
+		ctx.GenResError(code, "balance 是 使用 数字 类型")
+	}
+	var updateFirmValues map[string]interface{}
+
+	updateFirmValues = map[string]interface{}{"balance": balanceInt, "firm_name": firmname, "firm_realname": firm_realname}
+
+	err = dao.UpdateFirm(Fid, updateFirmValues)
+
+	if err != nil {
+		code := e.INVALID_PARAMS
+		ctx.GenResError(code, "更新失败")
+	}
+
+	values := map[string]string{"firmname": firmname, "firm_realname": firm_realname, "succMsg": "注册成功"}
+
+	ctx.GenResSuccess(values)
+}

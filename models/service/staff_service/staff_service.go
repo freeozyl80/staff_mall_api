@@ -19,7 +19,7 @@ type Staff struct {
 	UserAddress string
 	UserAvatar  string
 
-	Tel      int
+	Tel      string
 	Birthday int
 	Coin     int
 }

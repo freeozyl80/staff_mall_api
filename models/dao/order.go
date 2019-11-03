@@ -21,10 +21,10 @@ type Order struct {
 	UID      int    `gorm:"not null;" json:"uid"`
 	Username string `gorm:"not null;" json:"username"`
 	Realname string `gorm:"not null;" json:"realname"`
-	Tel      int    `gorm:"not null;" json:"tel"`
+	Tel      string `gorm:"not null;" json:"tel"`
 
 	ReceivingUsername    string `gorm:"not null;" json:"receiving_username"`
-	ReceivingUserTel     int    `gorm:"not null;" json:"receiving_tel"`
+	ReceivingUserTel     string `gorm:"not null;" json:"receiving_tel"`
 	ReceivingUserCity    string `gorm:"not null;" json:"receiving_user_city"`
 	ReceivingUserAddress string `gorm:"not null;" json:"receiving_user_address"`
 }
@@ -42,11 +42,11 @@ func GenerateOrder(
 	uid int,
 	username string,
 	realname string,
-	tel int,
+	tel string,
 	fid int,
 	receiving_username string,
 	receiving_user_city string,
-	receiving_tel int,
+	receiving_tel string,
 	receiving_user_address string,
 ) (Order, error) {
 

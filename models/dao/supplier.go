@@ -12,7 +12,7 @@ type Supplier struct {
 
 	SupplierName     string `gorm:"not null;unique" json:"supplier_name"`
 	SupplierRealname string `gorm:"not null" json:"supplier_realname"`
-	SupplierTel      int    `json:"supplier_tel"`
+	SupplierTel      string `json:"supplier_tel"`
 }
 
 func BuckUpsertSupplier(objArr []interface{}) ([]int, error) {

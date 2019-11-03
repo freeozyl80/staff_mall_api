@@ -16,7 +16,7 @@ type Staff struct {
 	FirmRealname string `json:"firm_realname"`
 
 	Gender      int    `gorm:"not null;default:1"json:"gender"`
-	Tel         int    `json:"tel"`
+	Tel         string `json:"tel"`
 	Coin        int    `gorm:"not null;default:0" json:"coin"`
 	Birthday    int    `json:"birthday"`
 	UserAddress string `json:"user_address"`

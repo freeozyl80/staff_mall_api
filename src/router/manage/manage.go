@@ -31,8 +31,10 @@ func MangeRouterInit(mgrouter *gin.RouterGroup) {
 	mgrouter.POST("/firm/staff/list/coin", context.Handle(staff.UpdateStaffListCoin))
 
 	// 公司列表操作
+	mgrouter.GET("/firm/detail", context.Handle(firm.FirmDetail))
 	mgrouter.GET("/firm/list", context.Handle(firm.FirmList))
 	mgrouter.POST("/firm/add", context.Handle(firm.FirmAdd))
+	mgrouter.POST("/firm/update", context.Handle(firm.FirmUpdate))
 	//// 公司列表账户操作
 	mgrouter.GET("/firm/account", context.Handle(firm.AccountList))
 	mgrouter.GET("/firm/delegate", context.Handle(user.DelegateManager))

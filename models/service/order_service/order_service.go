@@ -21,9 +21,9 @@ type Order struct {
 	UID                  int
 	Username             string
 	Realname             string
-	Tel                  int
+	Tel                  string
 	ReceivingUsername    string
-	ReceivingUserTel     int
+	ReceivingUserTel     string
 	ReceivingUserAddress string
 	ReceivingUserCity    string
 }
