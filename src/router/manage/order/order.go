@@ -82,6 +82,15 @@ func DeliverOrder(ctx *context.Context) {
 	var order_item = order_service.Order{
 		OrderID: orderid,
 	}
+
+	err = order_item.GetOrderInfo()
+
+	if err != nil {
+		code := e.INVALID_PARAMS
+		ctx.GenResError(code, "查询订单列表数据失败")
+		return
+	}
+
 	if order_item.OrderStatus != 2 {
 		code := e.INVALID_PARAMS
 		ctx.GenResError(code, err.Error())
