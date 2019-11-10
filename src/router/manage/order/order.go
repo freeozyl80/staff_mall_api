@@ -96,7 +96,7 @@ func DeliverOrder(ctx *context.Context) {
 		ctx.GenResError(code, err.Error())
 		return
 	}
-	updateOrderValues := map[string]interface{}{"OrderStatus": 5}
+	updateOrderValues := map[string]interface{}{"OrderStatus": 3}
 
 	err = dao.UpdateOrderItem(order_item.UID, order_item.OrderID, updateOrderValues)
 
