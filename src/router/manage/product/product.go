@@ -331,6 +331,10 @@ func ProductFirmAdd(ctx *context.Context) {
 	productStatus, _ := strconv.Atoi(ctx.PostForm("product_status"))
 	productDesc := ctx.PostForm("product_desc")
 
+	supplierId, _ := strconv.Atoi(ctx.PostForm("supplier_id"))
+	supplierName := ctx.PostForm("supplier_name")
+	supplierRealname := ctx.PostForm("supplier_realname")
+
 	product_item := product_service.Product{
 		ProductName:      productName,
 		ProductRealname:  productRealname,
@@ -342,6 +346,9 @@ func ProductFirmAdd(ctx *context.Context) {
 		ProductImg:       productImg,
 		ProductStatus:    productStatus,
 		ProductDesc:      productDesc,
+		SupplierId:       supplierId,
+		SupplierName:     supplierName,
+		SupplierRealname: supplierRealname,
 	}
 	err := product_item.Register()
 

@@ -20,7 +20,7 @@ type Product struct {
 	ProductImg       string `gorm:"not null; default:'https://img.zcool.cn/community/01fd5958be2833a801219c77b15a63.jpg@2o.jpg'" json:"product_img"`
 
 	SupplierId       int    `gorm:"not null; default:1" json:"supplier_id"`
-	SupplierName     string `gorm:"not null;unique" json:"supplier_name"`
+	SupplierName     string `gorm:"not null;" json:"supplier_name"`
 	SupplierRealname string `gorm:"not null" json:"supplier_realname"`
 	SupplierTel      int    `json:"supplier_tel"`
 }
