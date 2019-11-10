@@ -314,7 +314,6 @@ func OperateOrder(ctx *context.Context) {
 		UID:     UID,
 		OrderID: OrderID,
 	}
-	fmt.Printf("%+v\n", order_item)
 	err = order_item.GetOrderInfo()
 
 	if err != nil {
@@ -346,7 +345,7 @@ func OperateOrder(ctx *context.Context) {
 		values := map[string]interface{}{"succMsg": msg, "order_id": order_item.OrderID}
 
 		ctx.GenResSuccess(values)
-		return 
+		return
 	}
 
 	if OrderAimStatus == 2 {

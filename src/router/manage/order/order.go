@@ -75,3 +75,29 @@ func CancelOrder(ctx *context.Context) {
 
 	ctx.GenResSuccess(values)
 }
+func DeliverOrder(ctx *context.Context) {
+
+	orderid, err := uuid.FromString(ctx.PostForm("orderId"))
+
+	var order_item = order_service.Order{
+		OrderID: orderid,
+	}
+	if order_item.OrderStatus != 2 {
+		code := e.INVALID_PARAMS
+		ctx.GenResError(code, err.Error())
+		return
+	}
+	updateOrderValues := map[string]interface{}{"OrderStatus": 5}
+
+	err = dao.UpdateOrderItem(order_item.UID, order_item.OrderID, updateOrderValues)
+
+	if err != nil {
+		code := e.INVALID_PARAMS
+		ctx.GenResError(code, err.Error())
+		return
+	}
+
+	values := map[string]interface{}{"succMsg": "订单发货 更新成功"}
+
+	ctx.GenResSuccess(values)
+}

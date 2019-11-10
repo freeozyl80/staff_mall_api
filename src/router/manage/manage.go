@@ -51,4 +51,5 @@ func MangeRouterInit(mgrouter *gin.RouterGroup) {
 	//// 公司列表订单操作
 	mgrouter.GET("/order/list", context.Handle(order.OrderList))
 	mgrouter.GET("/order/cancel", context.Handle(order.CancelOrder))
+	mgrouter.GET("/order/deliver", context.Handle(order.DeliverOrder))
 }
