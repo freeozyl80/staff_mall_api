@@ -19,7 +19,8 @@ func OrderList(ctx *context.Context) {
 
 	seachValue := map[string]interface{}{"Fid": fid}
 
-	orderList, err := dao.GetOrderList((pageIndex-1)*pageSize, pageSize, seachValue)
+	total := new(int)
+	orderList, err := dao.GetOrderList(total, (pageIndex-1)*pageSize, pageSize, seachValue)
 
 	if err != nil {
 		code := e.INVALID_PARAMS
@@ -44,7 +45,7 @@ func OrderList(ctx *context.Context) {
 		orderResList = append(orderResList, item)
 	}
 
-	values := map[string]interface{}{"page": "page", "pageSize": "pageSize", "succMsg": "查询成功", "list": orderResList}
+	values := map[string]interface{}{"page": "page", "pageSize": "pageSize", "succMsg": "查询成功", "list": orderResList, "total": *total}
 
 	ctx.GenResSuccess(values)
 }

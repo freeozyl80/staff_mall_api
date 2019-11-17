@@ -82,9 +82,9 @@ func GenerateOrder(
 
 	return order, nil
 }
-func GetOrderList(pageIndex int, pageSize int, maps interface{}) ([]*Order, error) {
+func GetOrderList(total *int, pageIndex int, pageSize int, maps interface{}) ([]*Order, error) {
 	var orderList []*Order
-	err := db.Order("created_on desc").Where(maps).Where("created_on > ? OR  order_status != ?", time.Now().Unix()-30*60, 1).Offset(pageIndex).Limit(pageSize).Find(&orderList).Error
+	err := db.Model(&Order{}).Order("created_on desc").Count(total).Where(maps).Where("created_on > ? OR  order_status != ?", time.Now().Unix()-30*60, 1).Offset(pageIndex).Limit(pageSize).Find(&orderList).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}

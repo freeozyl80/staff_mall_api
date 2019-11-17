@@ -74,7 +74,8 @@ func ProductFirmList(ctx *context.Context) {
 		seachValue = append(seachValue, pid)
 	}
 
-	productlist, err := dao.GetProductList((pageIndex-1)*pageSize, pageSize, seachValue)
+	total := new(int)
+	productlist, err := dao.GetProductList(total, (pageIndex-1)*pageSize, pageSize, seachValue)
 
 	var productResList []map[string]interface{}
 
@@ -94,7 +95,7 @@ func ProductFirmList(ctx *context.Context) {
 
 		productResList = append(productResList, item)
 	}
-	values := map[string]interface{}{"page": pageIndex, "pageSize": pageSize, "list": productResList, "succMsg": "查询成功"}
+	values := map[string]interface{}{"page": pageIndex, "pageSize": pageSize, "list": productResList, "total": *total, "succMsg": "查询成功"}
 
 	ctx.GenResSuccess(values)
 }
@@ -123,7 +124,8 @@ func CategroyProductList(ctx *context.Context) {
 		seachValue = append(seachValue, pid)
 	}
 
-	productlist, err := dao.GetProductList((pageIndex-1)*pageSize, pageSize, seachValue)
+	total := new(int)
+	productlist, err := dao.GetProductList(total, (pageIndex-1)*pageSize, pageSize, seachValue)
 
 	var productResList []map[string]interface{}
 
@@ -145,7 +147,7 @@ func CategroyProductList(ctx *context.Context) {
 			productResList = append(productResList, item)
 		}
 	}
-	values := map[string]interface{}{"page": pageIndex, "pageSize": pageSize, "list": productResList, "succMsg": "查询成功"}
+	values := map[string]interface{}{"page": pageIndex, "pageSize": pageSize, "list": productResList, "total": *total, "succMsg": "查询成功"}
 
 	ctx.GenResSuccess(values)
 }

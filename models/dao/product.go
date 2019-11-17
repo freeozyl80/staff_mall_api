@@ -44,9 +44,9 @@ func BuckUpsertProduct(objArr []interface{}) ([]int, error) {
 	return ids, err
 }
 
-func GetProductList(pageIndex int, pageSize int, maps interface{}) ([]*Product, error) {
+func GetProductList(total *int, pageIndex int, pageSize int, maps interface{}) ([]*Product, error) {
 	var productList []*Product
-	err := db.Where(maps).Offset(pageIndex).Limit(pageSize).Find(&productList).Error
+	err := db.Model(&Product{}).Where(maps).Count(total).Offset(pageIndex).Limit(pageSize).Find(&productList).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}

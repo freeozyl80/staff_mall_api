@@ -239,7 +239,8 @@ func UserList(ctx *context.Context) {
 	pageIndex, _ := strconv.Atoi(ctx.Query("page_index"))
 	pageSize, _ := strconv.Atoi(ctx.Query("page_size"))
 
-	userlist, err := dao.GetAccountList((pageIndex-1)*pageSize, pageSize, "")
+	total := new(int)
+	userlist, err := dao.GetAccountList(total, (pageIndex-1)*pageSize, pageSize, "")
 
 	if err != nil {
 		code := e.INVALID_PARAMS
@@ -260,7 +261,7 @@ func UserList(ctx *context.Context) {
 		userResList = append(userResList, item)
 	}
 
-	values := map[string]interface{}{"page": "page", "pageSize": "pageSize", "succMsg": "注册成功", "list": userResList}
+	values := map[string]interface{}{"page": "page", "pageSize": "pageSize", "succMsg": "注册成功", "list": userResList, "total": *total}
 
 	ctx.GenResSuccess(values)
 }

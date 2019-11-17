@@ -41,9 +41,9 @@ func BuckUpsertAuth(objArr []interface{}) ([]int, error) {
 	return ids, err
 }
 
-func GetAuthList(pageIndex int, pageSize int, maps interface{}) ([]*Auth, error) {
+func GetAuthList(total *int, pageIndex int, pageSize int, maps interface{}) ([]*Auth, error) {
 	var authList []*Auth
-	err := db.Where(maps).Offset(pageIndex).Limit(pageSize).Find(&authList).Error
+	err := db.Model(&Auth{}).Where(maps).Count(total).Offset(pageIndex).Limit(pageSize).Find(&authList).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}

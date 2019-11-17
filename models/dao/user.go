@@ -95,13 +95,12 @@ func BuckUpsertUser(objArr []interface{}) ([]int, error) {
 	return ids, err
 }
 
-func GetAccountList(pageIndex int, pageSize int, maps interface{}) ([]*User, error) {
+func GetAccountList(total *int, pageIndex int, pageSize int, maps interface{}) ([]*User, error) {
 	var userlist []*User
-	err := db.Where(maps).Offset(pageIndex).Limit(pageSize).Find(&userlist).Error
+	err := db.Model(&User{}).Where(maps).Count(total).Offset(pageIndex).Limit(pageSize).Find(&userlist).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
-
 	return userlist, nil
 }
 

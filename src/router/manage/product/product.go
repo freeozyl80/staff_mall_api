@@ -35,7 +35,8 @@ func ProductList(ctx *context.Context) {
 	pageIndex, _ := strconv.Atoi(ctx.Query("page_index"))
 	pageSize, _ := strconv.Atoi(ctx.Query("page_size"))
 
-	productlist, err := dao.GetProductList((pageIndex-1)*pageSize, pageSize, "")
+	total := new(int)
+	productlist, err := dao.GetProductList(total, (pageIndex-1)*pageSize, pageSize, "")
 
 	if err != nil {
 		code := e.INVALID_PARAMS
@@ -64,7 +65,7 @@ func ProductList(ctx *context.Context) {
 		productResList = append(productResList, item)
 	}
 
-	values := map[string]interface{}{"page": "page", "pageSize": "pageSize", "succMsg": "查询成功", "list": productResList}
+	values := map[string]interface{}{"page": "page", "pageSize": "pageSize", "succMsg": "查询成功", "list": productResList, "total": *total}
 
 	ctx.GenResSuccess(values)
 }

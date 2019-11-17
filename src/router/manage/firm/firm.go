@@ -45,7 +45,8 @@ func AccountList(ctx *context.Context) {
 
 	seachValue := map[string]interface{}{"auth1": auth1}
 
-	userlist, err := dao.GetAuthList((pageIndex-1)*pageSize, pageSize, seachValue)
+	total := new(int)
+	userlist, err := dao.GetAuthList(total, (pageIndex-1)*pageSize, pageSize, seachValue)
 
 	if err != nil {
 		code := e.INVALID_PARAMS
@@ -60,12 +61,13 @@ func AccountList(ctx *context.Context) {
 
 		item["username"] = user_item.Username
 		item["id"] = user_item.ID
+		item["uid"] = user_item.UID
 		item["auth2"] = user_item.Auth2
 
 		userResList = append(userResList, item)
 	}
 
-	values := map[string]interface{}{"page": "page", "pageSize": "pageSize", "succMsg": "注册成功", "list": userResList}
+	values := map[string]interface{}{"page": "page", "pageSize": "pageSize", "succMsg": "查询成功", "list": userResList, "total": *total}
 
 	ctx.GenResSuccess(values)
 }
