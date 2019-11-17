@@ -25,6 +25,7 @@ func MangeRouterInit(mgrouter *gin.RouterGroup) {
 	mgrouter.GET("/user/list", context.Handle(user.UserList))
 	mgrouter.POST("/user/register", context.Handle(user.UserRegister))
 	mgrouter.POST("/user/import", context.Handle(user.UserImport))
+	mgrouter.POST("/user/reset", context.Handle(user.UserRest))
 
 	mgrouter.GET("/firm/staff", context.Handle(user.StaffInfo))
 	mgrouter.POST("/firm/staff/coin", context.Handle(staff.UpdateStaffCoin))

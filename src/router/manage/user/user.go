@@ -119,7 +119,11 @@ func AdminLogin(ctx *context.Context) {
 			ctx.GenResError(code, "")
 			return
 		} else {
-			ctx.SetCookie("hualvmall_authorization", token, 30*24*60*60, "/", "hualvmall.com", false, false)
+			if setting.ServerSetting.DevMode == "debug" {
+				ctx.SetCookie("hualvmall_authorization", token, 30*24*60*60, "/", "127.0.0.1", false, false)
+			} else {
+				ctx.SetCookie("hualvmall_authorization", token, 30*24*60*60, "/", "hualvmall.com", false, false)
+			}
 		}
 
 		ctx.GenResSuccess(values)
@@ -138,7 +142,6 @@ func UserLogin(ctx *context.Context) {
 		ctx.GenResError(code, "login info 结构不正确")
 		return
 	}
-	fmt.Printf("%#v", userLoginInfo)
 	user_service := account_service.User{Username: userLoginInfo.Name, Password: userLoginInfo.Pwd, Usertype: 3}
 	code := login(&user_service)
 
@@ -178,7 +181,28 @@ func AdminCheck(ctx *context.Context) {
 	values := map[string]interface{}{"uname": uname, "utype": utype, "succMsg": "登录成功"}
 	ctx.GenResSuccess(values)
 }
+func UserRest(ctx *context.Context) {
 
+	var code int
+	uid, _ := strconv.Atoi(ctx.PostForm("uid"))
+
+	var newPwd string
+	newPwd = "000000"
+	// 加密
+	u.CryptoHandler(&newPwd)
+	updateAccountValues := map[string]interface{}{"password": newPwd, "salt1": setting.CryptoSetting.Seed1, "salt2": setting.CryptoSetting.Seed2}
+
+	err := dao.UpdateUser(uid, updateAccountValues)
+
+	if err != nil {
+		code = e.ERROR
+		ctx.GenResError(code, err.Error())
+		return
+	}
+	values := map[string]string{"succMsg": "账号密码修改成功"}
+	ctx.GenResSuccess(values)
+
+}
 func UserRegister(ctx *context.Context) {
 	var code int
 	name := ctx.PostForm("name")
