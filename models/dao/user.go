@@ -3,6 +3,7 @@ package dao
 import (
 	"errors"
 	u "staff-mall-center/pkg/user"
+	"strconv"
 
 	"staff-mall-center/pkg/setting"
 
@@ -20,7 +21,7 @@ type User struct {
 	Salt2    string `json:"salt2"`
 }
 
-func ExistUser(username string, usertype int) (bool, error) {
+func GetUserItem(username string, usertype int) (User, error) {
 
 	var user User
 
@@ -28,14 +29,14 @@ func ExistUser(username string, usertype int) (bool, error) {
 
 	// 存在
 	if user.ID > 0 {
-		return true, nil
+		return user, nil
 	}
 	// 有报错，且报错不是是没有找到
 	if err != nil && err != gorm.ErrRecordNotFound {
-		return false, err
+		return user, err
 	}
 
-	return false, nil
+	return user, nil
 }
 
 func CheckUser(username, password string, usertype int) (int, error) {
@@ -76,15 +77,43 @@ func CheckUid(uid int, password string) (int, error) {
 	return 0, errors.New("can't find res")
 }
 
-func RegisterUser(username, password string, usertype int, realname string) error {
+func RegisterUser(username, password string, usertype int, realname, auth1 string) error {
+	tx := db.Begin()
 
 	u.CryptoHandler(&password)
-
 	var user = User{Username: username, Password: password, Usertype: usertype, Realname: realname, Salt1: setting.CryptoSetting.Seed1, Salt2: setting.CryptoSetting.Seed2}
-
-	if err := db.Create(&user).Error; err != nil {
+	if err := tx.Create(&user).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
+	if err := tx.Create(&Auth{Username: username, Auth1: auth1, Auth2: "1", Auth3: "1", UID: user.Model.ID}).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	fid, _ := strconv.Atoi(auth1)
+
+	firmItem, err := GetFirmItem(
+		fid,
+	)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Create(&Staff{
+		UID:          user.Model.ID,
+		Username:     username,
+		Realname:     realname,
+		Fid:          firmItem.Model.ID,
+		FirmRealname: firmItem.FirmRealname,
+		Coin:         0,
+	}).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
 
 	return nil
 }

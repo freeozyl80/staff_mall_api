@@ -23,11 +23,11 @@ func MangeRouterInit(mgrouter *gin.RouterGroup) {
 	// 用户操作
 	mgrouter.GET("/user/userinfo", context.Handle(user.AuthInfo))
 	mgrouter.GET("/user/list", context.Handle(user.UserList))
-	mgrouter.POST("/user/register", context.Handle(user.UserRegister))
 	mgrouter.POST("/user/import", context.Handle(user.UserImport))
 	mgrouter.POST("/user/reset", context.Handle(user.UserRest))
 
 	mgrouter.GET("/firm/staff", context.Handle(user.StaffInfo))
+	mgrouter.POST("/firm/staff/add", context.Handle(user.UserRegister))
 	mgrouter.POST("/firm/staff/coin", context.Handle(staff.UpdateStaffCoin))
 	mgrouter.POST("/firm/staff/list/coin", context.Handle(staff.UpdateStaffListCoin))
 

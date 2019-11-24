@@ -205,10 +205,13 @@ func UserRest(ctx *context.Context) {
 }
 func UserRegister(ctx *context.Context) {
 	var code int
+
+	auth1 := ctx.Query("fid")
 	name := ctx.PostForm("name")
+	realname := ctx.PostForm("realname")
 	pwd := ctx.PostForm("pwd")
 
-	if name == "" || pwd == "" {
+	if name == "" || pwd == "" || realname == "" {
 		code = e.INVALID_PARAMS
 		ctx.GenResError(code, "请输入正确的用户名密码")
 		return
@@ -216,20 +219,20 @@ func UserRegister(ctx *context.Context) {
 
 	var password = pwd // temp storage
 
-	user_service := account_service.User{Usertype: 4, Username: name, Password: pwd}
-	isSucc, err := user_service.Register()
+	user_item := account_service.FirmUser{
+		Usertype: 4,
+		Username: name,
+		Password: pwd,
+		Realname: realname,
+		Auth1:    auth1,
+	}
+	err := user_item.AccountRegister()
 
 	if err != nil {
 		code = e.ERROR
-		ctx.GenResError(code, "")
+		ctx.GenResError(code, err.Error())
 		return
 	}
-	if !isSucc {
-		code = e.INVALID_PARAMS
-		ctx.GenResError(code, "注册账户已存在")
-		return
-	}
-	code = e.SUCCESS
 
 	values := map[string]string{"account": name, "password": password, "succMsg": "注册成功"}
 	ctx.GenResSuccess(values)
