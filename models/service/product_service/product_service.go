@@ -24,6 +24,9 @@ type Product struct {
 	SupplierName     string
 	SupplierRealname string
 	SupplierTel      int
+
+	ProductBannerList string
+	ProductDetailList string
 }
 type ArrayProduct []Product
 
@@ -148,6 +151,9 @@ func (p *Product) Find() error {
 	p.SupplierName = product.SupplierName
 	p.SupplierRealname = product.SupplierRealname
 	p.SupplierTel = product.SupplierTel
+
+	p.ProductBannerList = product.ProductDetailList
+	p.ProductDetailList = product.ProductDetailList
 
 	return nil
 }

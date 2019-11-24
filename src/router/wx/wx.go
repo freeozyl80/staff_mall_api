@@ -14,6 +14,7 @@ import (
 func WxRouterInit(wrouter *gin.RouterGroup) {
 
 	wrouter.GET("/product/firm/list", context.Handle(product.ProductFirmList))
+	wrouter.GET("/product/detail/:id", context.Handle(product.ProductInfo))
 	wrouter.GET("/category/firm/list", context.Handle(product.CategoryFirmList))
 	wrouter.GET("/category/product/firm/list", context.Handle(product.CategroyProductList))
 

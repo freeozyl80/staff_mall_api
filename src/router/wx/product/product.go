@@ -3,6 +3,7 @@ package product
 import (
 	"staff-mall-center/models/dao"
 	"staff-mall-center/models/service/firm_service"
+	"staff-mall-center/models/service/product_service"
 	"staff-mall-center/pkg/context"
 	"staff-mall-center/pkg/e"
 	"strconv"
@@ -148,6 +149,41 @@ func CategroyProductList(ctx *context.Context) {
 		}
 	}
 	values := map[string]interface{}{"page": pageIndex, "pageSize": pageSize, "list": productResList, "total": *total, "succMsg": "查询成功"}
+
+	ctx.GenResSuccess(values)
+}
+
+func ProductInfo(ctx *context.Context) {
+	var code int
+	productId := ctx.Param("id")
+	ProductId, _ := strconv.Atoi(productId)
+
+	product_item := product_service.Product{
+		PID: ProductId,
+	}
+
+	err := product_item.Find()
+	if err != nil {
+		code = e.ERROR
+		ctx.GenResError(code, err.Error())
+		return
+	}
+
+	item := make(map[string]interface{})
+	item["pid"] = product_item.PID
+	item["product_name"] = product_item.ProductName
+	item["product_realname"] = product_item.ProductRealname
+	item["category_name"] = product_item.CategoryName
+	item["category_realname"] = product_item.CategoryRealname
+	item["product_desc"] = product_item.ProductDesc
+	item["product_count"] = product_item.ProductCount
+	item["product_status"] = product_item.ProductStatus
+	item["product_price"] = product_item.ProductPrice
+	item["product_img"] = product_item.ProductImg
+	item["product_detail_banner_list"] = product_item.ProductBannerList
+	item["product_detail_list"] = product_item.ProductDetailList
+
+	values := map[string]interface{}{"data": item, "succMsg": "查询成功"}
 
 	ctx.GenResSuccess(values)
 }
