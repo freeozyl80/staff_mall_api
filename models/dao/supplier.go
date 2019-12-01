@@ -2,7 +2,6 @@ package dao
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/jinzhu/gorm"
 )
@@ -16,14 +15,10 @@ type Supplier struct {
 }
 
 func BuckUpsertSupplier(objArr []interface{}) ([]int, error) {
-	fmt.Printf("%+v\n", objArr)
-	fmt.Println("--------------------------")
 	ids, err := BulkInsertOnDuplicateUpdate(db, objArr,
 		"supplier_name = values(supplier_name),"+
 			"supplier_tel = values(supplier_tel),"+
 			"supplier_realname = values(supplier_realname)")
-	fmt.Println(err)
-
 	return ids, err
 }
 

@@ -1,7 +1,6 @@
 package supplier_service
 
 import (
-	"fmt"
 	"staff-mall-center/models/dao"
 	"time"
 )
@@ -31,7 +30,6 @@ func (clist *ArraySupplier) BuckRegister() ([]int, error) {
 }
 
 func (s *Supplier) FindSupplier() error {
-	fmt.Println(s.SupplierName)
 	supplier, err := dao.FindSupplierById(s.SupplierName)
 
 	if err != nil {

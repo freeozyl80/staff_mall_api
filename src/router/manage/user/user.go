@@ -309,7 +309,7 @@ func UserImport(ctx *context.Context) {
 			var staffList = staff_service.ArrayStaff{}
 
 			for num, row := range arr {
-				if num != 0 {
+				if num != 0 && len(row[0]) > 0 {
 					if err != nil {
 						break
 					}

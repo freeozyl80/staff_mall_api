@@ -16,36 +16,56 @@ func CategoryFirmList(ctx *context.Context) {
 	pageSize, _ := strconv.Atoi(ctx.Query("page_size"))
 	fid, _ := strconv.Atoi(ctx.Query("fid"))
 
-	var firm_item = firm_service.Firm{
-		Fid: fid,
-	}
-	err := firm_item.FindFirm()
-
-	if err != nil {
-		code = e.ERROR
-		ctx.GenResError(code, err.Error())
-		return
-	}
-
-	seachValue := []int{}
-	for _, category_item := range strings.Split(firm_item.CategoryGroup, ",") {
-		cid, _ := strconv.Atoi(category_item)
-		seachValue = append(seachValue, cid)
-	}
-
-	categorylist, err := dao.GetCategoryList((pageIndex-1)*pageSize, pageSize, seachValue)
-
 	var categoryResList []map[string]interface{}
 
-	for _, categrouy_item := range categorylist {
-		item := make(map[string]interface{})
+	if fid == 0 {
+		categorylist, err := dao.GetCategoryList((pageIndex-1)*pageSize, pageSize, "")
 
-		item["cid"] = categrouy_item.ID
-		item["category_name"] = categrouy_item.CategoryName
-		item["category_realname"] = categrouy_item.CategoryRealname
-		item["category_desc"] = categrouy_item.CategoryDesc
+		if err != nil {
+			code = e.ERROR
+			ctx.GenResError(code, err.Error())
+			return
+		}
+		for _, categrouy_item := range categorylist {
+			item := make(map[string]interface{})
 
-		categoryResList = append(categoryResList, item)
+			item["cid"] = categrouy_item.ID
+			item["category_name"] = categrouy_item.CategoryName
+			item["category_realname"] = categrouy_item.CategoryRealname
+			item["category_desc"] = categrouy_item.CategoryDesc
+
+			categoryResList = append(categoryResList, item)
+		}
+
+	} else {
+		var firm_item = firm_service.Firm{
+			Fid: fid,
+		}
+		err := firm_item.FindFirm()
+
+		if err != nil {
+			code = e.ERROR
+			ctx.GenResError(code, err.Error())
+			return
+		}
+
+		seachValue := []int{}
+		for _, category_item := range strings.Split(firm_item.CategoryGroup, ",") {
+			cid, _ := strconv.Atoi(category_item)
+			seachValue = append(seachValue, cid)
+		}
+		categorylist, err := dao.GetCategoryList((pageIndex-1)*pageSize, pageSize, seachValue)
+
+		for _, categrouy_item := range categorylist {
+			item := make(map[string]interface{})
+
+			item["cid"] = categrouy_item.ID
+			item["category_name"] = categrouy_item.CategoryName
+			item["category_realname"] = categrouy_item.CategoryRealname
+			item["category_desc"] = categrouy_item.CategoryDesc
+
+			categoryResList = append(categoryResList, item)
+		}
 	}
 	values := map[string]interface{}{"page": pageIndex, "pageSize": pageSize, "list": categoryResList, "succMsg": "查询成功"}
 

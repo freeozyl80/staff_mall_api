@@ -131,6 +131,8 @@ func FirmDetail(ctx *context.Context) {
 	firmResInfo := make(map[string]interface{})
 
 	firmResInfo["firm_name"] = firm_item.Firmname
+	firmResInfo["product_group"] = firm_item.ProductGroup
+	firmResInfo["category_group"] = firm_item.CategoryGroup
 	firmResInfo["firm_realname"] = firm_item.FirmRealname
 	firmResInfo["balance"] = firm_item.Balance
 
@@ -167,6 +169,8 @@ func FirmUpdate(ctx *context.Context) {
 	firmname := ctx.PostForm("firmname")
 	firm_realname := ctx.PostForm("firm_realname")
 	balance := ctx.PostForm("balance")
+	product_group := ctx.PostForm("product_group")
+	category_group := ctx.PostForm("category_group")
 
 	balanceInt, err := strconv.Atoi(balance)
 
@@ -175,8 +179,18 @@ func FirmUpdate(ctx *context.Context) {
 		ctx.GenResError(code, "balance 是 使用 数字 类型")
 	}
 	var updateFirmValues map[string]interface{}
-
-	updateFirmValues = map[string]interface{}{"balance": balanceInt, "firm_name": firmname, "firm_realname": firm_realname}
+	if len(product_group) > 0 {
+		updateFirmValues = map[string]interface{}{
+			"balance":        balanceInt,
+			"firm_name":      firmname,
+			"firm_realname":  firm_realname,
+			"product_group":  product_group,
+			"category_group": category_group,
+		}
+	} else {
+		updateFirmValues = map[string]interface{}{
+			"balance": balanceInt, "firm_name": firmname, "firm_realname": firm_realname}
+	}
 
 	err = dao.UpdateFirm(Fid, updateFirmValues)
 

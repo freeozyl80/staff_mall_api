@@ -52,6 +52,7 @@ func ProductList(ctx *context.Context) {
 		item["pid"] = product_item.ID
 		item["product_name"] = product_item.ProductName
 		item["product_realname"] = product_item.ProductRealname
+		item["cid"] = product_item.CategoryID
 		item["category_name"] = product_item.CategoryName
 		item["category_realname"] = product_item.CategoryRealname
 		item["product_desc"] = product_item.ProductDesc
@@ -191,7 +192,7 @@ func ProductImport(ctx *context.Context) {
 			// 商品导入
 
 			for num, row := range arr {
-				if num != 0 {
+				if num != 0 && len(row[0]) > 0 {
 					product_category_item := category_service.Category{
 						CategoryName: row[2],
 					}
@@ -207,7 +208,6 @@ func ProductImport(ctx *context.Context) {
 						ctx.GenResError(code, err.Error())
 						return
 					}
-
 					product_item_count, _ := strconv.Atoi(row[4])
 					product_item_price, _ := strconv.Atoi(row[5])
 
@@ -298,7 +298,7 @@ func ProductImport(ctx *context.Context) {
 			}
 
 			code = e.SUCCESS
-			values := map[string]string{"succMsg": "账户批量导入成功, 已存在商品不会被覆盖"}
+			values := map[string]string{"succMsg": "商品批量导入成功, 已存在商品不会被覆盖"}
 			ctx.GenResSuccess(values)
 			return
 
