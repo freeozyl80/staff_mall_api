@@ -121,6 +121,8 @@ func (p *Product) Register() error {
 		p.SupplierName,
 		p.SupplierRealname,
 		p.SupplierTel,
+		p.ProductBannerList,
+		p.ProductDetailList,
 	)
 	p.PID = product.ID
 	if err != nil {

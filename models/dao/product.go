@@ -107,6 +107,8 @@ func RegisterProduct(
 	supplier_name string,
 	supplier_realname string,
 	supplier_tel int,
+	product_banner_list string,
+	product_detail_list string,
 ) (Product, error) {
 	var product = Product{
 		ProductName:      productName,
@@ -124,6 +126,9 @@ func RegisterProduct(
 		SupplierName:     supplier_name,
 		SupplierRealname: supplier_realname,
 		SupplierTel:      supplier_tel,
+
+		ProductBannerList: product_banner_list,
+		ProductDetailList: product_detail_list,
 	}
 
 	if err := db.Create(&product).Error; err != nil {

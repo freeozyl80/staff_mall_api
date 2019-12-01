@@ -336,32 +336,42 @@ func ProductFirmAdd(ctx *context.Context) {
 	supplierName := ctx.PostForm("supplier_name")
 	supplierRealname := ctx.PostForm("supplier_realname")
 
+	productBannerList := ctx.PostForm("product_banner_list")
+
+	productDetailList := ctx.PostForm("product_detail_list")
+
 	product_item := product_service.Product{
-		ProductName:      productName,
-		ProductRealname:  productRealname,
-		CategoryID:       categoryID,
-		CategoryName:     categoryName,
-		CategoryRealname: categoryRealname,
-		ProductPrice:     productPrice,
-		ProductCount:     productCount,
-		ProductImg:       productImg,
-		ProductStatus:    productStatus,
-		ProductDesc:      productDesc,
-		SupplierId:       supplierId,
-		SupplierName:     supplierName,
-		SupplierRealname: supplierRealname,
+		ProductName:       productName,
+		ProductRealname:   productRealname,
+		CategoryID:        categoryID,
+		CategoryName:      categoryName,
+		CategoryRealname:  categoryRealname,
+		ProductPrice:      productPrice,
+		ProductCount:      productCount,
+		ProductImg:        productImg,
+		ProductStatus:     productStatus,
+		ProductDesc:       productDesc,
+		SupplierId:        supplierId,
+		SupplierName:      supplierName,
+		SupplierRealname:  supplierRealname,
+		ProductBannerList: productBannerList,
+		ProductDetailList: productDetailList,
 	}
 	err := product_item.Register()
 
 	firm := firm_service.Firm{
 		Fid: fid,
 	}
-	err = firm.FindFirm()
+	if err == nil {
+		err = firm.FindFirm()
+	}
 
 	updateFirmValues := map[string]interface{}{
 		"product_group": firm.ProductGroup + strconv.Itoa(product_item.PID) + ",",
 	}
-	err = dao.UpdateFirm(fid, updateFirmValues)
+	if err == nil {
+		err = dao.UpdateFirm(fid, updateFirmValues)
+	}
 
 	if err != nil {
 		code = e.INVALID_PARAMS
@@ -396,20 +406,26 @@ func ProductFirmUpdate(ctx *context.Context) {
 	productStatus, _ := strconv.Atoi(ctx.PostForm("product_status"))
 	productDesc := ctx.PostForm("product_desc")
 
+	ProductBannerList := ctx.PostForm("product_banner_list")
+
+	ProductDetailList := ctx.PostForm("product_detail_list")
+
 	updateProductValues := map[string]interface{}{
-		"product_name":      productName,
-		"product_realname":  productRealname,
-		"category_id":       categoryID,
-		"category_name":     categoryName,
-		"category_realname": categoryRealname,
-		"supplier_id":       supplierId,
-		"supplier_name":     supplierName,
-		"supplier_realname": supplierRealname,
-		"product_price":     productPrice,
-		"product_count":     productCount,
-		"product_img":       productImg,
-		"product_status":    productStatus,
-		"product_desc":      productDesc,
+		"product_name":        productName,
+		"product_realname":    productRealname,
+		"category_id":         categoryID,
+		"category_name":       categoryName,
+		"category_realname":   categoryRealname,
+		"supplier_id":         supplierId,
+		"supplier_name":       supplierName,
+		"supplier_realname":   supplierRealname,
+		"product_price":       productPrice,
+		"product_count":       productCount,
+		"product_img":         productImg,
+		"product_status":      productStatus,
+		"product_desc":        productDesc,
+		"product_banner_list": ProductBannerList,
+		"product_detail_list": ProductDetailList,
 	}
 
 	err := dao.UpdateProduct(pid, updateProductValues)
@@ -442,20 +458,37 @@ func ProductFirmDetail(ctx *context.Context) {
 	}
 
 	code = e.SUCCESS
+
+	var bannerList []string
+	var detailList []string
+	if len(product_item.ProductDetailList) > 0 {
+		detailList = strings.Split(product_item.ProductDetailList, ",")
+	} else {
+		detailList = []string{}
+	}
+
+	if len(product_item.ProductBannerList) > 0 {
+		bannerList = strings.Split(product_item.ProductBannerList, ",")
+	} else {
+		bannerList = []string{}
+	}
+
 	productValues := map[string]interface{}{
-		"product_name":      product_item.ProductName,
-		"product_realname":  product_item.ProductRealname,
-		"category_id":       product_item.CategoryID,
-		"category_name":     product_item.CategoryName,
-		"category_realname": product_item.CategoryRealname,
-		"supplier_id":       product_item.SupplierId,
-		"supplier_name":     product_item.SupplierName,
-		"supplier_realname": product_item.SupplierRealname,
-		"product_price":     product_item.ProductPrice,
-		"product_count":     product_item.ProductCount,
-		"product_img":       product_item.ProductImg,
-		"product_status":    product_item.ProductStatus,
-		"product_desc":      product_item.ProductDesc,
+		"product_name":        product_item.ProductName,
+		"product_realname":    product_item.ProductRealname,
+		"category_id":         product_item.CategoryID,
+		"category_name":       product_item.CategoryName,
+		"category_realname":   product_item.CategoryRealname,
+		"supplier_id":         product_item.SupplierId,
+		"supplier_name":       product_item.SupplierName,
+		"supplier_realname":   product_item.SupplierRealname,
+		"product_price":       product_item.ProductPrice,
+		"product_count":       product_item.ProductCount,
+		"product_img":         product_item.ProductImg,
+		"product_status":      product_item.ProductStatus,
+		"product_desc":        product_item.ProductDesc,
+		"product_banner_list": bannerList,
+		"product_detail_list": detailList,
 	}
 
 	values := map[string]interface{}{"info": productValues}
