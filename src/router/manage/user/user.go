@@ -220,7 +220,7 @@ func UserRegister(ctx *context.Context) {
 	var password = pwd // temp storage
 
 	user_item := account_service.FirmUser{
-		Usertype: 4,
+		Usertype: 3,
 		Username: name,
 		Password: pwd,
 		Realname: realname,

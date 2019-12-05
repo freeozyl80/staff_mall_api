@@ -81,12 +81,19 @@ func RegisterUser(username, password string, usertype int, realname, auth1 strin
 	tx := db.Begin()
 
 	u.CryptoHandler(&password)
-	var user = User{Username: username, Password: password, Usertype: usertype, Realname: realname, Salt1: setting.CryptoSetting.Seed1, Salt2: setting.CryptoSetting.Seed2}
+	var user = User{
+		Username: username,
+		Password: password,
+		Usertype: usertype,
+		Realname: realname,
+		Salt1:    setting.CryptoSetting.Seed1,
+		Salt2:    setting.CryptoSetting.Seed2}
 	if err := tx.Create(&user).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
-	if err := tx.Create(&Auth{Username: username, Auth1: auth1, Auth2: "1", Auth3: "1", UID: user.Model.ID}).Error; err != nil {
+	if err := tx.Create(&Auth{Username: username,
+		Auth1: auth1, Auth2: "1", Auth3: "1", UID: user.Model.ID}).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -106,6 +113,7 @@ func RegisterUser(username, password string, usertype int, realname, auth1 strin
 		Username:     username,
 		Realname:     realname,
 		Fid:          firmItem.Model.ID,
+		Firmname:     firmItem.Firmname,
 		FirmRealname: firmItem.FirmRealname,
 		Coin:         0,
 	}).Error; err != nil {
