@@ -17,7 +17,12 @@ func OrderList(ctx *context.Context) {
 	pageSize, _ := strconv.Atoi(ctx.Query("page_size"))
 	fid, _ := strconv.Atoi(ctx.Query("fid"))
 
-	seachValue := map[string]interface{}{"Fid": fid}
+	var seachValue map[string]interface{}
+	if fid != 0 {
+		seachValue = map[string]interface{}{"Fid": fid}
+	} else {
+		seachValue = map[string]interface{}{}
+	}
 
 	total := new(int)
 	orderList, err := dao.GetOrderList(total, (pageIndex-1)*pageSize, pageSize, seachValue)
@@ -41,6 +46,7 @@ func OrderList(ctx *context.Context) {
 		item["order_receiving_tel"] = order_item.ReceivingUserTel
 		item["order_receiving_city"] = order_item.ReceivingUserCity
 		item["order_receiving_address"] = order_item.ReceivingUserAddress
+		item["fid"] = order_item.Fid
 
 		orderResList = append(orderResList, item)
 	}

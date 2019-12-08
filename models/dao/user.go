@@ -97,6 +97,12 @@ func RegisterUser(username, password string, usertype int, realname, auth1 strin
 		tx.Rollback()
 		return err
 	}
+	if auth1 == "0" {
+
+		tx.Commit()
+
+		return nil
+	}
 
 	fid, _ := strconv.Atoi(auth1)
 

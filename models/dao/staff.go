@@ -9,7 +9,7 @@ type Staff struct {
 
 	UID      int    `gorm:"not null;unique" json:"uid"`
 	Username string `gorm:"not null;unique" json:"username"`
-	Realname string `gorm:"not null;unique" json:"realname"`
+	Realname string `gorm:"not null;" json:"realname"`
 
 	Fid          int    `json:"fid"`
 	Firmname     string `json:"firmname"`

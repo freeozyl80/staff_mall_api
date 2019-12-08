@@ -100,6 +100,10 @@ func AdminLogin(ctx *context.Context) {
 		user_service.Usertype = 1
 		code = login(&user_service)
 	}
+	if logintype == "4" { //客服登录
+		user_service.Usertype = 4
+		code = login(&user_service)
+	}
 	if code == e.INVALID_PARAMS {
 		ctx.GenResError(code, "请输入正确的用户名和密码")
 		return
@@ -203,6 +207,21 @@ func UserRest(ctx *context.Context) {
 	ctx.GenResSuccess(values)
 
 }
+func UserOff(ctx *context.Context) {
+	var code int
+	uid, _ := strconv.Atoi(ctx.PostForm("uid"))
+	updateAccountValues := map[string]interface{}{"usertype": 0}
+
+	err := dao.UpdateUser(uid, updateAccountValues)
+
+	if err != nil {
+		code = e.ERROR
+		ctx.GenResError(code, err.Error())
+		return
+	}
+	values := map[string]string{"succMsg": "账号修改成功"}
+	ctx.GenResSuccess(values)
+}
 func UserRegister(ctx *context.Context) {
 	var code int
 
@@ -216,11 +235,16 @@ func UserRegister(ctx *context.Context) {
 		ctx.GenResError(code, "请输入正确的用户名密码")
 		return
 	}
-
+	var userType = 3
 	var password = pwd // temp storage
 
+	if len(auth1) == 0 {
+		userType = 4 // 未提供fid 则为 客服账号
+		auth1 = "0"  // auth1 100 则为 客服权限
+	}
+
 	user_item := account_service.FirmUser{
-		Usertype: 3,
+		Usertype: userType,
 		Username: name,
 		Password: pwd,
 		Realname: realname,
@@ -241,9 +265,15 @@ func UserRegister(ctx *context.Context) {
 func UserList(ctx *context.Context) {
 	pageIndex, _ := strconv.Atoi(ctx.Query("page_index"))
 	pageSize, _ := strconv.Atoi(ctx.Query("page_size"))
+	userType, _ := strconv.Atoi(ctx.Query("user_type"))
 
 	total := new(int)
-	userlist, err := dao.GetAccountList(total, (pageIndex-1)*pageSize, pageSize, "")
+
+	var searchValue map[string]interface{}
+	if userType != 0 {
+		searchValue = map[string]interface{}{"userType": userType}
+	}
+	userlist, err := dao.GetAccountList(total, (pageIndex-1)*pageSize, pageSize, searchValue)
 
 	if err != nil {
 		code := e.INVALID_PARAMS
