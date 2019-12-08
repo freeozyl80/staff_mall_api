@@ -43,12 +43,22 @@ func CheckUser(username, password string, usertype int) (int, error) {
 	u.CryptoHandler(&password)
 
 	var user User
-	err := db.Select("id").Where(User{Username: username, Password: password, Usertype: usertype}).First(&user).Error
+	var err error
 
-	// 存在
-	if user.ID > 0 {
-		return user.ID, nil
+	if usertype != 0 {
+		err = db.Model(&User{}).Where(User{Username: username, Password: password, Usertype: usertype}).First(&user).Error
+		if user.ID > 0 {
+			return user.ID, nil
+		}
+	} else {
+		err = db.Model(&User{}).Where(User{Username: username, Password: password}).First(&user).Error
+
+		if user.ID > 0 && (user.Usertype == 2 || user.Usertype == 3) {
+			return user.ID, nil
+		}
 	}
+	// 存在
+
 	// 有报错，且报错不是是没有找到
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return 0, err

@@ -34,7 +34,6 @@ type UserModifiedInfo struct {
 
 func login(user_service *account_service.User) int {
 	code := e.SUCCESS
-
 	if user_service.Username == "" || user_service.Password == "" {
 		code = e.INVALID_PARAMS
 		return code
@@ -146,7 +145,7 @@ func UserLogin(ctx *context.Context) {
 		ctx.GenResError(code, "login info 结构不正确")
 		return
 	}
-	user_service := account_service.User{Username: userLoginInfo.Name, Password: userLoginInfo.Pwd, Usertype: 3}
+	user_service := account_service.User{Username: userLoginInfo.Name, Password: userLoginInfo.Pwd}
 	code := login(&user_service)
 
 	if code == e.INVALID_PARAMS {
@@ -353,7 +352,6 @@ func UserImport(ctx *context.Context) {
 			ids, err := accoutList.BuckRegister()
 
 			if err != nil {
-				fmt.Println(err)
 				code = e.INVALID_PARAMS
 				ctx.GenResError(code, err.Error())
 				return
@@ -367,8 +365,6 @@ func UserImport(ctx *context.Context) {
 					Fid: fid,
 				}
 				err = staff_item_firm.FindFirm()
-				fmt.Println("----------------------")
-				fmt.Printf("%+v\n", staff_item_firm)
 				if err != nil {
 					code = e.INVALID_PARAMS
 					ctx.GenResError(code, err.Error())
