@@ -37,6 +37,26 @@ func FirmList(ctx *context.Context) {
 
 	ctx.GenResSuccess(values)
 }
+func StaffList(ctx *context.Context) {
+	pageIndex, _ := strconv.Atoi(ctx.Query("page_index"))
+	pageSize, _ := strconv.Atoi(ctx.Query("page_size"))
+	fid, _ := strconv.Atoi(ctx.Query("fid"))
+
+	seachValue := map[string]interface{}{"fid": fid}
+
+	total := new(int)
+	userlist, err := dao.GetStaffList(total, (pageIndex-1)*pageSize, pageSize, seachValue)
+
+	if err != nil {
+		code := e.INVALID_PARAMS
+		ctx.GenResError(code, "查询用户列表数据失败")
+		return
+	}
+
+	values := map[string]interface{}{"page": "page", "pageSize": "pageSize", "succMsg": "查询成功", "list": userlist, "total": *total}
+
+	ctx.GenResSuccess(values)
+}
 func AccountList(ctx *context.Context) {
 
 	pageIndex, _ := strconv.Atoi(ctx.Query("page_index"))

@@ -2,6 +2,8 @@ package dao
 
 import (
 	"errors"
+
+	"github.com/jinzhu/gorm"
 )
 
 type Staff struct {
@@ -80,4 +82,14 @@ func UpdateStaffCoin(uid int, fid int, coin int, basecoin int, firmcoin int) err
 	tx.Commit()
 
 	return nil
+}
+
+func GetStaffList(total *int, pageIndex int, pageSize int, maps interface{}) ([]*Staff, error) {
+	var staffList []*Staff
+	err := db.Model(&Staff{}).Where(maps).Count(total).Offset(pageIndex).Limit(pageSize).Find(&staffList).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	return staffList, nil
 }
