@@ -1,6 +1,8 @@
 package order
 
 import (
+	"fmt"
+	"net/http"
 	"staff-mall-center/models/dao"
 	"staff-mall-center/models/service/order_service"
 	"staff-mall-center/models/service/staff_service"
@@ -47,6 +49,7 @@ func OrderList(ctx *context.Context) {
 		item["order_receiving_city"] = order_item.ReceivingUserCity
 		item["order_receiving_address"] = order_item.ReceivingUserAddress
 		item["fid"] = order_item.Fid
+		item["uid"] = order_item.UID
 
 		orderResList = append(orderResList, item)
 	}
@@ -55,7 +58,10 @@ func OrderList(ctx *context.Context) {
 
 	ctx.GenResSuccess(values)
 }
-
+func OrderDetail(ctx *context.Context) {
+	url := fmt.Sprintf("/wx/order/item/%v?uid=%v", ctx.Query("order_id"), ctx.Query("order_id"))
+	ctx.Redirect(http.StatusMovedPermanently, url)
+}
 func CancelOrder(ctx *context.Context) {
 	fid, _ := strconv.Atoi(ctx.Query("fid"))
 	orderid, err := uuid.FromString(ctx.PostForm("orderId"))

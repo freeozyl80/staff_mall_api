@@ -216,10 +216,12 @@ func ListOrder(ctx *context.Context) {
 
 func GetOrderInfo(ctx *context.Context) {
 	uid, _ := ctx.Get("uid")
+	if uid == nil {
+		uid = ctx.Query("uid")
+	}
 	UID, _ := strconv.Atoi(uid.(string))
 
 	orderID := ctx.Param("id")
-
 	OrderID, err := uuid.FromString(orderID)
 
 	if err != nil {
