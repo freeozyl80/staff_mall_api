@@ -23,10 +23,26 @@ type Model struct {
 func Setup() {
 	fmt.Println("开始连接数据库")
 	var err error
+
+	var password string
+	var host string
+	switch setting.ServerSetting.DevMode {
+	case "dev":
+		fmt.Println(setting.DatabaseSetting)
+		password = setting.DatabaseSetting.DevPassword
+		host = setting.DatabaseSetting.DevHost
+	case "pre":
+		password = setting.DatabaseSetting.PrePassword
+		host = setting.DatabaseSetting.PreHost
+	case "online":
+		password = setting.DatabaseSetting.PrdPassword
+		host = setting.DatabaseSetting.PrdHost
+	}
+
 	db, err = gorm.Open(setting.DatabaseSetting.Type, fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
 		setting.DatabaseSetting.User,
-		setting.DatabaseSetting.Password,
-		setting.DatabaseSetting.Host,
+		password,
+		host,
 		setting.DatabaseSetting.Name))
 
 	if err != nil {

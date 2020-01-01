@@ -8,11 +8,13 @@ import (
 	"staff-mall-center/pkg/setting"
 	"staff-mall-center/src/router/benchmark"
 	"staff-mall-center/src/router/manage"
+	"staff-mall-center/src/router/third"
 	"staff-mall-center/src/router/wx"
 	"syscall"
+	"time"
 
 	"github.com/fvbock/endless"
-	//"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/cors"
 
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
@@ -30,17 +32,19 @@ func Start() {
 	router.Use(gin.Recovery())
 
 	// cors
-	// router.Use(cors.New(cors.Config{
-	// 	AllowOrigins:     []string{"http://127.0.0.1:8001"},
-	// 	AllowMethods:     []string{"GET", "POST", "OPTIONS"},
-	// 	AllowHeaders:     []string{"Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, hualvmall_authorization"},
-	// 	ExposeHeaders:    []string{"Content-Length"},
-	// 	AllowCredentials: true,
-	// 	AllowOriginFunc: func(origin string) bool {
-	// 		return origin == "http://hualvmall.com"
-	// 	},
-	// 	MaxAge: 12 * time.Hour,
-	// }))
+	if setting.ServerSetting.DevMode == "dev" {
+		router.Use(cors.New(cors.Config{
+			AllowOrigins:     []string{"http://127.0.0.1:8001"},
+			AllowMethods:     []string{"GET", "POST", "OPTIONS"},
+			AllowHeaders:     []string{"Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, hualvmall_authorization"},
+			ExposeHeaders:    []string{"Content-Length"},
+			AllowCredentials: true,
+			AllowOriginFunc: func(origin string) bool {
+				return origin == "http://hualvmall.com"
+			},
+			MaxAge: 12 * time.Hour,
+		}))
+	}
 
 	// 心跳benchmark检测
 	router.GET("/benchmark", benchmark.MyBenchLogger, func(c *gin.Context) {
@@ -64,6 +68,9 @@ func Start() {
 
 	manageRouter := router.Group("/manage")
 	manage.MangeRouterInit(manageRouter)
+
+	thirdRouter := router.Group("/third")
+	third.ThirdRouterInit(thirdRouter)
 
 	port := fmt.Sprintf(":%d", setting.ServerSetting.HttpPort)
 	//router.Run(port)

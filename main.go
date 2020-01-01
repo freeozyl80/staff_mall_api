@@ -15,11 +15,12 @@ import (
 
 func init() {
 	setting.Setup()
-	dao.Setup()
 	logging.Setup()
+}
+func setup() {
+	dao.Setup()
 	bootstrap.Setup()
 }
-
 func main() {
 
 	//cron.CronRun()
@@ -52,9 +53,9 @@ func main() {
 			Destination: &setting.ServerSetting.HttpPort, //接收值的
 		},
 		cli.StringFlag{
-			Name:        "debug",
+			Name:        "mode",
 			Value:       setting.ServerSetting.DevMode,
-			Usage:       "Server debug",
+			Usage:       "Server mode",
 			Destination: &setting.ServerSetting.DevMode,
 		},
 	}
@@ -66,15 +67,16 @@ func main() {
 			Category: "arithmetic",
 			Action: func(c *cli.Context) error {
 
-				host, port, debug := setting.ServerSetting.Host, setting.ServerSetting.HttpPort, setting.ServerSetting.DevMode
-				fmt.Printf("host启动为：%v，端口号启动为：%v，debug模式为 %v \n", host, port, debug)
+				host, port, mode := setting.ServerSetting.Host, setting.ServerSetting.HttpPort, setting.ServerSetting.DevMode
+				fmt.Printf("host启动为：%v，端口号启动为：%v，debug模式为 %v \n", host, port, mode)
+
+				setup()
 
 				router.Start()
 				return nil
 			},
 		},
 	}
-
 	err := app.Run(os.Args)
 
 	if err != nil {

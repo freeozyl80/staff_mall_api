@@ -76,6 +76,15 @@ func ProductFirmList(ctx *context.Context) {
 	var code int
 	pageIndex, _ := strconv.Atoi(ctx.Query("page_index"))
 	pageSize, _ := strconv.Atoi(ctx.Query("page_size"))
+	ProductStatus, _ := strconv.Atoi(ctx.Query("product_status"))
+
+	var productValue map[string]interface{}
+	if ProductStatus != 0 {
+		productValue = map[string]interface{}{"product_status": ProductStatus}
+	} else {
+		productValue = map[string]interface{}{}
+	}
+
 	fid, _ := strconv.Atoi(ctx.Query("fid"))
 
 	var firm_item = firm_service.Firm{
@@ -96,7 +105,7 @@ func ProductFirmList(ctx *context.Context) {
 	}
 
 	total := new(int)
-	productlist, err := dao.GetProductList(total, (pageIndex-1)*pageSize, pageSize, seachValue)
+	productlist, err := dao.GetProductList(total, (pageIndex-1)*pageSize, pageSize, productValue)
 
 	var productResList []map[string]interface{}
 

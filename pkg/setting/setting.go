@@ -16,6 +16,10 @@ type App struct {
 	LogSaveName     string
 	LogFileExt      string
 	TimeFormat      string
+
+	DevWebHost string
+	PreWebHost string
+	PrdWebHost string
 }
 
 type Server struct {
@@ -29,12 +33,15 @@ type Server struct {
 type Database struct {
 	Type        string
 	User        string
-	Password    string
-	Host        string
+	DevPassword string
+	PrePassword string
+	PrdPassword string
+	DevHost     string
+	PrdHost     string
+	PreHost     string
 	Name        string
 	TablePrefix string
 }
-
 type Xlsx struct {
 	UserXlsx    string
 	ProductXlsx string
@@ -45,11 +52,18 @@ type Crypto struct {
 	Seed2 string
 }
 
+type Qiniu struct {
+	AccessKey string
+	SecretKey string
+	Bucket    string
+}
+
 var ServerSetting = &Server{}
 var AppSetting = &App{}
 var DatabaseSetting = &Database{}
 var XlsxSetting = &Xlsx{}
 var CryptoSetting = &Crypto{}
+var QiniuSetting = &Qiniu{}
 
 var cfg *ini.File
 
@@ -65,6 +79,7 @@ func Setup() {
 	mapTo("database", DatabaseSetting)
 	mapTo("xlsx", XlsxSetting)
 	mapTo("crypto", CryptoSetting)
+	mapTo("qiniu", QiniuSetting)
 
 	ServerSetting.ReadTimeout = ServerSetting.ReadTimeout * time.Second
 	ServerSetting.WriteTimeout = ServerSetting.ReadTimeout * time.Second

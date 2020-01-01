@@ -34,9 +34,17 @@ func ProductList(ctx *context.Context) {
 
 	pageIndex, _ := strconv.Atoi(ctx.Query("page_index"))
 	pageSize, _ := strconv.Atoi(ctx.Query("page_size"))
+	ProductStatus, _ := strconv.Atoi(ctx.Query("product_status"))
+
+	var productValue map[string]interface{}
+	if ProductStatus != 0 {
+		productValue = map[string]interface{}{"product_status": ProductStatus}
+	} else {
+		productValue = map[string]interface{}{}
+	}
 
 	total := new(int)
-	productlist, err := dao.GetProductList(total, (pageIndex-1)*pageSize, pageSize, "")
+	productlist, err := dao.GetProductList(total, (pageIndex-1)*pageSize, pageSize, productValue)
 
 	if err != nil {
 		code := e.INVALID_PARAMS
@@ -72,7 +80,7 @@ func ProductList(ctx *context.Context) {
 }
 
 func ProductFirmList(ctx *context.Context) {
-	url := fmt.Sprintf("/wx/product/firm/list?fid=%v&page_index=%v&page_size=%v", ctx.Query("fid"), ctx.Query("page_index"), ctx.Query("page_size"))
+	url := fmt.Sprintf("/wx/product/firm/list?fid=%v&page_index=%v&page_size=%v", ctx.Query("fid"), ctx.Query("page_index"), ctx.Query("page_size"), ctx.Query("product_status"))
 	ctx.Redirect(http.StatusMovedPermanently, url)
 }
 

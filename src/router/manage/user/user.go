@@ -122,10 +122,12 @@ func AdminLogin(ctx *context.Context) {
 			ctx.GenResError(code, "")
 			return
 		} else {
-			if setting.ServerSetting.DevMode == "debug" {
-				ctx.SetCookie("hualvmall_authorization", token, 30*24*60*60, "/", "127.0.0.1", false, false)
-			} else {
-				ctx.SetCookie("hualvmall_authorization", token, 30*24*60*60, "/", "hualvmall.com", false, false)
+			if setting.ServerSetting.DevMode == "dev" {
+				ctx.SetCookie("hualvmall_authorization", token, 30*24*60*60, "/", setting.AppSetting.DevWebHost, false, false)
+			} else if setting.ServerSetting.DevMode == "pre" {
+				ctx.SetCookie("hualvmall_authorization", token, 30*24*60*60, "/", setting.AppSetting.PreWebHost, false, false)
+			} else if setting.ServerSetting.DevMode == "prd" {
+				ctx.SetCookie("hualvmall_authorization", token, 30*24*60*60, "/", setting.AppSetting.PrdWebHost, false, false)
 			}
 		}
 
