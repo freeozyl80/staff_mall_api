@@ -34,7 +34,7 @@ func Start() {
 	// cors
 	if setting.ServerSetting.DevMode == "dev" {
 		router.Use(cors.New(cors.Config{
-			AllowOrigins:     []string{"http://127.0.0.1:8001"},
+			AllowOrigins:     []string{"http://dev.hualvmall.com:8001"},
 			AllowMethods:     []string{"GET", "POST", "OPTIONS"},
 			AllowHeaders:     []string{"Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, hualvmall_authorization"},
 			ExposeHeaders:    []string{"Content-Length"},
