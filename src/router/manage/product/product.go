@@ -80,7 +80,7 @@ func ProductList(ctx *context.Context) {
 }
 
 func ProductFirmList(ctx *context.Context) {
-	url := fmt.Sprintf("/wx/product/firm/list?fid=%v&page_index=%v&page_size=%v", ctx.Query("fid"), ctx.Query("page_index"), ctx.Query("page_size"), ctx.Query("product_status"))
+	url := fmt.Sprintf("/wx/product/firm/list?fid=%v&page_index=%v&page_size=%v&product_status=%v", ctx.Query("fid"), ctx.Query("page_index"), ctx.Query("page_size"), ctx.Query("product_status"))
 	ctx.Redirect(http.StatusMovedPermanently, url)
 }
 
