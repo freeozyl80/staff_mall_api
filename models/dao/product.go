@@ -24,8 +24,8 @@ type Product struct {
 	SupplierRealname string `gorm:"not null" json:"supplier_realname"`
 	SupplierTel      int    `json:"supplier_tel"`
 
-	ProductBannerList string `gorm:"not null: default:"" json:'product_banner_list`
-	ProductDetailList string `gorm:"not null: default:"" json:'product_detail_list`
+	ProductBannerList string `gorm:"not null; default:'[]'" json:"product_banner_list"`
+	ProductDetailList string `gorm:"not null; default:'[]'" json:"product_detail_list"`
 }
 
 func BuckUpsertProduct(objArr []interface{}) ([]int, error) {
