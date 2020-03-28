@@ -126,7 +126,7 @@ func AdminLogin(ctx *context.Context) {
 				ctx.SetCookie("hualvmall_authorization", token, 30*24*60*60, "/", setting.AppSetting.DevWebHost, false, false)
 			} else if setting.ServerSetting.DevMode == "pre" {
 				ctx.SetCookie("hualvmall_authorization", token, 30*24*60*60, "/", setting.AppSetting.PreWebHost, false, false)
-			} else if setting.ServerSetting.DevMode == "prd" {
+			} else if setting.ServerSetting.DevMode == "online" {
 				ctx.SetCookie("hualvmall_authorization", token, 30*24*60*60, "/", setting.AppSetting.PrdWebHost, false, false)
 			}
 		}
